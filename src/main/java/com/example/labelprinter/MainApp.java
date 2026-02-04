@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -62,7 +63,11 @@ public class MainApp extends Application {
         root.setPadding(new Insets(12));
 
         gridPane = buildLabelGrid();
-        root.setCenter(gridPane);
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setPannable(true);
+        root.setCenter(scrollPane);
 
         VBox controls = buildControls();
         root.setBottom(controls);
