@@ -12,6 +12,7 @@ public class LabelCell extends StackPane {
     private final int row;
     private final int col;
     private final Rectangle background;
+    private final VBox textBox;
     private final Label productLabel = new Label();
     private final Label versionLabel = new Label();
     private final Label warehouseLabel = new Label();
@@ -29,7 +30,7 @@ public class LabelCell extends StackPane {
         background.setStroke(Color.LIGHTGRAY);
         background.setStrokeWidth(1);
 
-        VBox textBox = new VBox(2, productLabel, versionLabel, warehouseLabel, dateLabel);
+        textBox = new VBox(2, productLabel, versionLabel, warehouseLabel, dateLabel);
         textBox.setPadding(new Insets(4));
         textBox.setAlignment(Pos.TOP_LEFT);
 
@@ -84,6 +85,18 @@ public class LabelCell extends StackPane {
     public void setFontSize(double fontSize) {
         this.fontSize = fontSize;
         updateFontSize();
+    }
+
+    public void setDimensions(double width, double height) {
+        background.setWidth(width);
+        background.setHeight(height);
+        setMinSize(width, height);
+        setPrefSize(width, height);
+        setMaxSize(width, height);
+    }
+
+    public void setTextPadding(double paddingPx) {
+        textBox.setPadding(new Insets(paddingPx));
     }
 
     public double getFontSize() {

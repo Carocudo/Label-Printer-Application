@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalDouble;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DataStore {
@@ -143,29 +143,52 @@ public class DataStore {
         Files.write(path, lines, StandardCharsets.UTF_8);
     }
 
-    public OptionalDouble loadFontSize() throws IOException {
+    public PrintSettings loadSettings() throws IOException {
+        PrintSettings settings = new PrintSettings();
         Path path = dataDir.resolve(CONFIG_FILE);
         if (!Files.exists(path)) {
-            return OptionalDouble.empty();
+            return settings;
         }
-        List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-        for (String line : lines) {
-            String[] parts = line.split("=", 2);
-            if (parts.length == 2 && parts[0].trim().equals("fontSize")) {
-                try {
-                    return OptionalDouble.of(Double.parseDouble(parts[1].trim()));
-                } catch (NumberFormatException ex) {
-                    return OptionalDouble.empty();
-                }
-            }
+        Properties properties = new Properties();
+        try (var input = Files.newInputStream(path)) {
+            properties.load(input);
         }
-        return OptionalDouble.empty();
+        settings.setFontSize(parseDouble(properties.getProperty("fontSize"), settings.getFontSize()));
+        settings.setPageWidthMm(parseDouble(properties.getProperty("pageWidthMm"), settings.getPageWidthMm()));
+        settings.setPageHeightMm(parseDouble(properties.getProperty("pageHeightMm"), settings.getPageHeightMm()));
+        settings.setLabelWidthMm(parseDouble(properties.getProperty("labelWidthMm"), settings.getLabelWidthMm()));
+        settings.setLabelHeightMm(parseDouble(properties.getProperty("labelHeightMm"), settings.getLabelHeightMm()));
+        settings.setGapXmm(parseDouble(properties.getProperty("gapXmm"), settings.getGapXmm()));
+        settings.setGapYmm(parseDouble(properties.getProperty("gapYmm"), settings.getGapYmm()));
+        settings.setPaddingMm(parseDouble(properties.getProperty("paddingMm"), settings.getPaddingMm()));
+        return settings;
     }
 
-    public void saveFontSize(double fontSize) throws IOException {
+    public void saveSettings(PrintSettings settings) throws IOException {
+        Properties properties = new Properties();
+        properties.setProperty("fontSize", Double.toString(settings.getFontSize()));
+        properties.setProperty("pageWidthMm", Double.toString(settings.getPageWidthMm()));
+        properties.setProperty("pageHeightMm", Double.toString(settings.getPageHeightMm()));
+        properties.setProperty("labelWidthMm", Double.toString(settings.getLabelWidthMm()));
+        properties.setProperty("labelHeightMm", Double.toString(settings.getLabelHeightMm()));
+        properties.setProperty("gapXmm", Double.toString(settings.getGapXmm()));
+        properties.setProperty("gapYmm", Double.toString(settings.getGapYmm()));
+        properties.setProperty("paddingMm", Double.toString(settings.getPaddingMm()));
         Path path = dataDir.resolve(CONFIG_FILE);
-        List<String> lines = List.of("fontSize=" + fontSize);
-        Files.write(path, lines, StandardCharsets.UTF_8);
+        try (var output = Files.newOutputStream(path)) {
+            properties.store(output, "Label Printer settings");
+        }
+    }
+
+    private double parseDouble(String value, double fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException ex) {
+            return fallback;
+        }
     }
 
     public String getVersionsFilename() {
@@ -190,5 +213,9 @@ public class DataStore {
 
     public String getLabelsFilename() {
         return LABELS_FILE;
+    }
+
+    public String getConfigFilename() {
+        return CONFIG_FILE;
     }
 }

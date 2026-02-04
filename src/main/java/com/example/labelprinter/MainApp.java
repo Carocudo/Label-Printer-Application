@@ -30,11 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 
 public class MainApp extends Application {
-    private static final double UI_LABEL_WIDTH = 200;
-    private static final double UI_LABEL_HEIGHT = 90;
     private static final double UI_GRID_GAP = 8;
 
     private final DataStore dataStore = new DataStore(Path.of("data"));
@@ -45,7 +42,8 @@ public class MainApp extends Application {
 
     private LabelCell activeCell;
     private boolean updatingControls;
-    private double fontSize = 12;
+    private PrintSettings settings = new PrintSettings();
+    private GridPane gridPane;
     private ComboBox<Product> productCombo;
     private ComboBox<String> versionCombo;
     private ComboBox<String> warehouseCombo;
@@ -63,7 +61,7 @@ public class MainApp extends Application {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(12));
 
-        GridPane gridPane = buildLabelGrid();
+        gridPane = buildLabelGrid();
         root.setCenter(gridPane);
 
         VBox controls = buildControls();
@@ -81,7 +79,7 @@ public class MainApp extends Application {
                 dataStore.saveProducts(productOptions);
                 dataStore.saveSimpleList(dataStore.getVersionsFilename(), versionOptions);
                 dataStore.saveSimpleList(dataStore.getWarehousesFilename(), warehouseOptions);
-                dataStore.saveFontSize(fontSize);
+                dataStore.saveSettings(settings);
             } catch (IOException ex) {
                 showError("Save error", "Failed to save label data.", ex.getMessage());
             }
@@ -93,14 +91,12 @@ public class MainApp extends Application {
         versionOptions.setAll(dataStore.loadSimpleList(dataStore.getVersionsFilename()));
         warehouseOptions.setAll(dataStore.loadSimpleList(dataStore.getWarehousesFilename()));
 
-        OptionalDouble storedFontSize = dataStore.loadFontSize();
-        storedFontSize.ifPresent(value -> fontSize = value);
+        settings = dataStore.loadSettings();
     }
 
     private GridPane buildLabelGrid() {
         GridPane gridPane = new GridPane();
-        gridPane.setHgap(UI_GRID_GAP);
-        gridPane.setVgap(UI_GRID_GAP);
+        updateGridSpacing(gridPane);
         gridPane.setAlignment(Pos.CENTER);
 
         Map<String, Product> productsByCode = new HashMap<>();
@@ -117,8 +113,10 @@ public class MainApp extends Application {
 
         for (int row = 0; row < LabelSheetConfig.ROWS; row++) {
             for (int col = 0; col < LabelSheetConfig.COLUMNS; col++) {
-                LabelCell cell = new LabelCell(row, col, UI_LABEL_WIDTH, UI_LABEL_HEIGHT);
-                cell.setFontSize(fontSize);
+                double widthPx = LabelSheetConfig.mmToPixels(settings.getLabelWidthMm());
+                double heightPx = LabelSheetConfig.mmToPixels(settings.getLabelHeightMm());
+                LabelCell cell = new LabelCell(row, col, widthPx, heightPx);
+                applySettingsToCell(cell);
                 int index = dataStore.toIndex(row, col);
                 LabelData data = savedLabels.get(index);
                 if (data != null) {
@@ -189,15 +187,30 @@ public class MainApp extends Application {
 
         Button editFontButton = new Button("Edit Font parameters");
         editFontButton.setOnAction(event -> {
-            FontSettingsDialog dialog = new FontSettingsDialog(fontSize);
+            FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize());
             Optional<Double> result = dialog.showAndWait();
             result.ifPresent(size -> {
-                fontSize = Math.round(size);
-                labelCells.forEach(cell -> cell.setFontSize(fontSize));
+                settings.setFontSize(Math.round(size));
+                labelCells.forEach(cell -> cell.setFontSize(settings.getFontSize()));
                 try {
-                    dataStore.saveFontSize(fontSize);
+                    dataStore.saveSettings(settings);
                 } catch (IOException ex) {
                     showError("Save error", "Unable to save font size.", ex.getMessage());
+                }
+            });
+        });
+
+        Button sheetSettingsButton = new Button("Sheet settings");
+        sheetSettingsButton.setOnAction(event -> {
+            SheetSettingsDialog dialog = new SheetSettingsDialog(settings);
+            Optional<PrintSettings> result = dialog.showAndWait();
+            result.ifPresent(updated -> {
+                settings = updated;
+                applySettingsToCells();
+                try {
+                    dataStore.saveSettings(settings);
+                } catch (IOException ex) {
+                    showError("Save error", "Unable to save sheet settings.", ex.getMessage());
                 }
             });
         });
@@ -214,7 +227,7 @@ public class MainApp extends Application {
         HBox.setHgrow(warehouseCombo, Priority.ALWAYS);
         HBox.setHgrow(datePicker, Priority.ALWAYS);
 
-        HBox row2 = new HBox(10, editDataButton, editFontButton, clearButton, printButton);
+        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, printButton);
         row2.setAlignment(Pos.CENTER_LEFT);
 
         VBox container = new VBox(12, new Separator(), row1, row2);
@@ -302,6 +315,29 @@ public class MainApp extends Application {
         updateActiveLabelData(null, null, null, null);
     }
 
+    private void applySettingsToCell(LabelCell cell) {
+        double widthPx = LabelSheetConfig.mmToPixels(settings.getLabelWidthMm());
+        double heightPx = LabelSheetConfig.mmToPixels(settings.getLabelHeightMm());
+        double paddingPx = LabelSheetConfig.mmToPixels(settings.getPaddingMm());
+        cell.setDimensions(widthPx, heightPx);
+        cell.setTextPadding(paddingPx);
+        cell.setFontSize(settings.getFontSize());
+    }
+
+    private void applySettingsToCells() {
+        labelCells.forEach(this::applySettingsToCell);
+        if (gridPane != null) {
+            updateGridSpacing(gridPane);
+        }
+    }
+
+    private void updateGridSpacing(GridPane targetGrid) {
+        double gapX = LabelSheetConfig.mmToPixels(settings.getGapXmm());
+        double gapY = LabelSheetConfig.mmToPixels(settings.getGapYmm());
+        targetGrid.setHgap(gapX > 0 ? gapX : UI_GRID_GAP);
+        targetGrid.setVgap(gapY > 0 ? gapY : UI_GRID_GAP);
+    }
+
     private void reconcileProducts() {
         Map<String, Product> productByCode = new HashMap<>();
         for (Product product : productOptions) {
@@ -349,13 +385,23 @@ public class MainApp extends Application {
     }
 
     private Pane buildPrintPane(PrinterJob job) {
-        double labelWidth = LabelSheetConfig.mmToPoints(LabelSheetConfig.LABEL_WIDTH_MM);
-        double labelHeight = LabelSheetConfig.mmToPoints(LabelSheetConfig.LABEL_HEIGHT_MM);
-        double gapX = LabelSheetConfig.mmToPoints(LabelSheetConfig.GAP_X_MM);
-        double gapY = LabelSheetConfig.mmToPoints(LabelSheetConfig.GAP_Y_MM);
+        double labelWidth = LabelSheetConfig.mmToPoints(settings.getLabelWidthMm());
+        double labelHeight = LabelSheetConfig.mmToPoints(settings.getLabelHeightMm());
+        double gapX = LabelSheetConfig.mmToPoints(settings.getGapXmm());
+        double gapY = LabelSheetConfig.mmToPoints(settings.getGapYmm());
 
         double printableWidth = job.getJobSettings().getPageLayout().getPrintableWidth();
         double printableHeight = job.getJobSettings().getPageLayout().getPrintableHeight();
+
+        double layoutWidth = (LabelSheetConfig.COLUMNS * labelWidth) + ((LabelSheetConfig.COLUMNS - 1) * gapX);
+        double layoutHeight = (LabelSheetConfig.ROWS * labelHeight) + ((LabelSheetConfig.ROWS - 1) * gapY);
+
+        double pageWidth = LabelSheetConfig.mmToPoints(settings.getPageWidthMm());
+        double pageHeight = LabelSheetConfig.mmToPoints(settings.getPageHeightMm());
+        double availableWidth = Math.min(printableWidth, pageWidth);
+        double availableHeight = Math.min(printableHeight, pageHeight);
+        double offsetX = Math.max(0, (availableWidth - layoutWidth) / 2);
+        double offsetY = Math.max(0, (availableHeight - layoutHeight) / 2);
 
         Pane root = new Pane();
         root.setPrefSize(printableWidth, printableHeight);
@@ -366,8 +412,8 @@ public class MainApp extends Application {
             }
             int row = cell.getRow();
             int col = cell.getCol();
-            double x = col * (labelWidth + gapX);
-            double y = row * (labelHeight + gapY);
+            double x = offsetX + col * (labelWidth + gapX);
+            double y = offsetY + row * (labelHeight + gapY);
             VBox labelNode = createPrintLabel(cell.getData(), labelWidth, labelHeight);
             labelNode.setLayoutX(x);
             labelNode.setLayoutY(y);
@@ -379,7 +425,8 @@ public class MainApp extends Application {
     private VBox createPrintLabel(LabelData data, double width, double height) {
         VBox box = new VBox(2);
         box.setPrefSize(width, height);
-        box.setPadding(new Insets(4));
+        double padding = LabelSheetConfig.mmToPoints(settings.getPaddingMm());
+        box.setPadding(new Insets(padding));
         if (data != null && !data.isEmpty()) {
             String productText = "";
             if (data.getProduct() != null) {
@@ -390,12 +437,12 @@ public class MainApp extends Application {
             String versionText = data.getVersion() == null ? "" : data.getVersion();
             String productLine = (productText + " " + versionText).trim();
             Label product = new Label(productLine);
-            product.setFont(Font.font(fontSize));
+            product.setFont(Font.font(settings.getFontSize()));
             product.setStyle("-fx-font-weight: bold;");
             Label warehouse = new Label(data.getWarehouse() == null ? "" : data.getWarehouse());
-            warehouse.setFont(Font.font(fontSize));
+            warehouse.setFont(Font.font(settings.getFontSize()));
             Label date = new Label(data.getDate() == null ? "" : data.getDate().toString());
-            date.setFont(Font.font(fontSize));
+            date.setFont(Font.font(settings.getFontSize()));
             box.getChildren().addAll(product, warehouse, date);
         }
         return box;
