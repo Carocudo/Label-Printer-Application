@@ -51,7 +51,7 @@ public class EditDataDialog extends Dialog<Void> {
                 createSimpleListTab("Fabriker", this.warehouses, false));
 
         getDialogPane().setContent(tabPane);
-        getDialogPane().setPrefSize(700, 420);
+        getDialogPane().setPrefSize(750, 500); // was 700x420
 
         setResultConverter(buttonType -> {
             if (buttonType == saveButtonType) {
@@ -64,38 +64,58 @@ public class EditDataDialog extends Dialog<Void> {
     }
 
     private Tab createProductsTab() {
-        TableView<Product> tableView = new TableView<>(products);
-        tableView.setEditable(true);
+        ListView<Product> listView = new ListView<>(products);
+        listView.setEditable(false);
+        listView.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(Product item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getCode() + " — " + item.getName());
+                }
+            }
+        });
 
-        TableColumn<Product, String> codeColumn = new TableColumn<>("Kod");
-        codeColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getCode()));
-        codeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        codeColumn.setOnEditCommit(event -> event.getRowValue().setCode(event.getNewValue()));
-        codeColumn.setPrefWidth(200);
+        TextField codeField = new TextField();
+        codeField.setPromptText("Kod");
 
-        TableColumn<Product, String> nameColumn = new TableColumn<>("Namn");
-        nameColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getName()));
-        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        nameColumn.setOnEditCommit(event -> event.getRowValue().setName(event.getNewValue()));
-        nameColumn.setPrefWidth(380);
-
-        tableView.getColumns().addAll(codeColumn, nameColumn);
+        TextField nameField = new TextField();
+        nameField.setPromptText("Namn");
+        HBox.setHgrow(nameField, Priority.ALWAYS);
 
         Button addButton = new Button("Lägg till");
-        addButton.setOnAction(event -> products.add(new Product("", "")));
+        addButton.setOnAction(event -> {
+            String code = codeField.getText().trim();
+            String name = nameField.getText().trim();
+            if (!code.isBlank() || !name.isBlank()) {
+                products.add(new Product(code, name));
+                codeField.clear();
+                nameField.clear();
+                codeField.requestFocus();
+            }
+        });
 
         Button removeButton = new Button("Ta bort");
+        removeButton.getStyleClass().add("button-danger");
         removeButton.setOnAction(event -> {
-            Product selected = tableView.getSelectionModel().getSelectedItem();
+            Product selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 products.remove(selected);
             }
         });
 
-        HBox actions = new HBox(10, addButton, removeButton);
-        VBox layout = new VBox(10, tableView, actions);
+        // Allow pressing Enter in nameField to trigger add
+        nameField.setOnAction(event -> addButton.fire());
+        codeField.setOnAction(event -> nameField.requestFocus()); // Tab through with Enter
+
+        HBox inputRow = new HBox(8, codeField, nameField, addButton, removeButton);
+        listView.setPlaceholder(new javafx.scene.control.Label("Inga produkter tillagda"));
+
+        VBox layout = new VBox(10, listView, inputRow);
         layout.setPadding(new Insets(10));
-        VBox.setVgrow(tableView, Priority.ALWAYS);
+        VBox.setVgrow(listView, Priority.ALWAYS);
 
         Tab tab = new Tab("Papperskvaliteter", layout);
         tab.setClosable(false);
@@ -117,6 +137,7 @@ public class EditDataDialog extends Dialog<Void> {
             }
         });
         Button removeButton = new Button("Ta bort");
+        removeButton.getStyleClass().add("button-danger");
         removeButton.setOnAction(event -> {
             String selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
