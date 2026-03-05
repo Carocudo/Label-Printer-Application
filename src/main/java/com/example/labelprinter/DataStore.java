@@ -160,7 +160,13 @@ public class DataStore {
         settings.setLabelHeightMm(parseDouble(properties.getProperty("labelHeightMm"), settings.getLabelHeightMm()));
         settings.setGapXmm(parseDouble(properties.getProperty("gapXmm"), settings.getGapXmm()));
         settings.setGapYmm(parseDouble(properties.getProperty("gapYmm"), settings.getGapYmm()));
-        settings.setPaddingMm(parseDouble(properties.getProperty("paddingMm"), settings.getPaddingMm()));
+        String legacyPadding = properties.getProperty("paddingMm");
+        settings.setPaddingTopMm(parseDouble(properties.getProperty("paddingTopMm"),
+                parseDouble(legacyPadding, settings.getPaddingTopMm())));
+        settings.setPaddingLeftMm(parseDouble(properties.getProperty("paddingLeftMm"),
+                parseDouble(legacyPadding, settings.getPaddingLeftMm())));
+        settings.setMarginTopMm(parseDouble(properties.getProperty("marginTopMm"), settings.getMarginTopMm()));
+        settings.setMarginLeftMm(parseDouble(properties.getProperty("marginLeftMm"), settings.getMarginLeftMm()));
         return settings;
     }
 
@@ -173,7 +179,10 @@ public class DataStore {
         properties.setProperty("labelHeightMm", Double.toString(settings.getLabelHeightMm()));
         properties.setProperty("gapXmm", Double.toString(settings.getGapXmm()));
         properties.setProperty("gapYmm", Double.toString(settings.getGapYmm()));
-        properties.setProperty("paddingMm", Double.toString(settings.getPaddingMm()));
+        properties.setProperty("paddingTopMm", Double.toString(settings.getPaddingTopMm()));
+        properties.setProperty("paddingLeftMm", Double.toString(settings.getPaddingLeftMm()));
+        properties.setProperty("marginTopMm", Double.toString(settings.getMarginTopMm()));
+        properties.setProperty("marginLeftMm", Double.toString(settings.getMarginLeftMm()));
         Path path = dataDir.resolve(CONFIG_FILE);
         try (var output = Files.newOutputStream(path)) {
             properties.store(output, "Label Printer settings");

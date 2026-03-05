@@ -10,7 +10,10 @@ public final class LabelSheetConfig {
     public static final double DEFAULT_LABEL_HEIGHT_MM = 38;
     public static final double DEFAULT_GAP_X_MM = 2;
     public static final double DEFAULT_GAP_Y_MM = 2;
-    public static final double DEFAULT_PADDING_MM = 2;
+    public static final double DEFAULT_PADDING_TOP_MM = 2;
+    public static final double DEFAULT_PADDING_LEFT_MM = 2;
+    public static final double DEFAULT_MARGIN_TOP_MM = 0;
+    public static final double DEFAULT_MARGIN_LEFT_MM = 0;
 
     private LabelSheetConfig() {
     }

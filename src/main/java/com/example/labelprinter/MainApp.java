@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MainApp extends Application {
     private static final double UI_GRID_GAP = 8;
@@ -65,8 +66,13 @@ public class MainApp extends Application {
         gridPane = buildLabelGrid();
         ScrollPane scrollPane = new ScrollPane(gridPane);
         scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToHeight(false);
         scrollPane.setPannable(true);
+
+        // Hide scrollbars when content fits, show only when needed
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
         root.setCenter(scrollPane);
 
         VBox controls = buildControls();
@@ -93,8 +99,8 @@ public class MainApp extends Application {
 
     private void loadInitialData() throws IOException {
         productOptions.setAll(dataStore.loadProducts());
-        versionOptions.setAll(dataStore.loadSimpleList(dataStore.getVersionsFilename()));
-        warehouseOptions.setAll(dataStore.loadSimpleList(dataStore.getWarehousesFilename()));
+        versionOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getVersionsFilename())));
+        warehouseOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getWarehousesFilename())));
 
         settings = dataStore.loadSettings();
     }
@@ -149,14 +155,17 @@ public class MainApp extends Application {
         productCombo = new ComboBox<>(productOptions);
         productCombo.setPromptText("Product");
         productCombo.setMaxWidth(Double.MAX_VALUE);
+        productCombo.setVisibleRowCount(5);
 
         versionCombo = new ComboBox<>(versionOptions);
         versionCombo.setPromptText("Version");
         versionCombo.setMaxWidth(Double.MAX_VALUE);
+        versionCombo.setVisibleRowCount(5);
 
         warehouseCombo = new ComboBox<>(warehouseOptions);
         warehouseCombo.setPromptText("Warehouse");
         warehouseCombo.setMaxWidth(Double.MAX_VALUE);
+        warehouseCombo.setVisibleRowCount(5);
 
         datePicker = new DatePicker();
         datePicker.setPromptText("Date");
@@ -175,8 +184,8 @@ public class MainApp extends Application {
         editDataButton.setOnAction(event -> {
             EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, payload -> {
                 productOptions.setAll(payload.products());
-                versionOptions.setAll(payload.versions());
-                warehouseOptions.setAll(payload.warehouses());
+                versionOptions.setAll(sortedValues(payload.versions()));
+                warehouseOptions.setAll(sortedValues(payload.warehouses()));
                 try {
                     dataStore.saveProducts(productOptions);
                     dataStore.saveSimpleList(dataStore.getVersionsFilename(), versionOptions);
@@ -239,6 +248,14 @@ public class MainApp extends Application {
         container.setPadding(new Insets(12, 0, 0, 0));
 
         return container;
+    }
+
+    private List<String> sortedValues(List<String> input) {
+        return input.stream()
+                .filter(value -> value != null && !value.isBlank())
+                .map(String::trim)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 
     private void setActiveCell(LabelCell cell) {
@@ -323,9 +340,10 @@ public class MainApp extends Application {
     private void applySettingsToCell(LabelCell cell) {
         double widthPx = LabelSheetConfig.mmToPixels(settings.getLabelWidthMm());
         double heightPx = LabelSheetConfig.mmToPixels(settings.getLabelHeightMm());
-        double paddingPx = LabelSheetConfig.mmToPixels(settings.getPaddingMm());
+        double paddingTopPx = LabelSheetConfig.mmToPixels(settings.getPaddingTopMm());
+        double paddingLeftPx = LabelSheetConfig.mmToPixels(settings.getPaddingLeftMm());
         cell.setDimensions(widthPx, heightPx);
-        cell.setTextPadding(paddingPx);
+        cell.setTextPadding(paddingTopPx, paddingLeftPx);
         cell.setFontSize(settings.getFontSize());
     }
 
@@ -398,15 +416,14 @@ public class MainApp extends Application {
         double printableWidth = job.getJobSettings().getPageLayout().getPrintableWidth();
         double printableHeight = job.getJobSettings().getPageLayout().getPrintableHeight();
 
-        double layoutWidth = (LabelSheetConfig.COLUMNS * labelWidth) + ((LabelSheetConfig.COLUMNS - 1) * gapX);
-        double layoutHeight = (LabelSheetConfig.ROWS * labelHeight) + ((LabelSheetConfig.ROWS - 1) * gapY);
-
         double pageWidth = LabelSheetConfig.mmToPoints(settings.getPageWidthMm());
         double pageHeight = LabelSheetConfig.mmToPoints(settings.getPageHeightMm());
         double availableWidth = Math.min(printableWidth, pageWidth);
         double availableHeight = Math.min(printableHeight, pageHeight);
-        double offsetX = Math.max(0, (availableWidth - layoutWidth) / 2);
-        double offsetY = Math.max(0, (availableHeight - layoutHeight) / 2);
+        double marginLeft = LabelSheetConfig.mmToPoints(settings.getMarginLeftMm());
+        double marginTop = LabelSheetConfig.mmToPoints(settings.getMarginTopMm());
+        double offsetX = Math.min(Math.max(0, marginLeft), availableWidth);
+        double offsetY = Math.min(Math.max(0, marginTop), availableHeight);
 
         Pane root = new Pane();
         root.setPrefSize(printableWidth, printableHeight);
@@ -430,8 +447,9 @@ public class MainApp extends Application {
     private VBox createPrintLabel(LabelData data, double width, double height) {
         VBox box = new VBox(2);
         box.setPrefSize(width, height);
-        double padding = LabelSheetConfig.mmToPoints(settings.getPaddingMm());
-        box.setPadding(new Insets(padding));
+        double paddingTop = LabelSheetConfig.mmToPoints(settings.getPaddingTopMm());
+        double paddingLeft = LabelSheetConfig.mmToPoints(settings.getPaddingLeftMm());
+        box.setPadding(new Insets(paddingTop, 0, 0, paddingLeft));
         if (data != null && !data.isEmpty()) {
             String productText = "";
             if (data.getProduct() != null) {

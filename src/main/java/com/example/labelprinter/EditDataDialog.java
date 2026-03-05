@@ -44,8 +44,8 @@ public class EditDataDialog extends Dialog<Void> {
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
         TabPane tabPane = new TabPane();
-        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab("Versions", this.versions),
-                createSimpleListTab("Warehouses", this.warehouses));
+        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab("Versions", this.versions, true),
+                createSimpleListTab("Warehouses", this.warehouses, false));
 
         getDialogPane().setContent(tabPane);
         getDialogPane().setPrefSize(700, 420);
@@ -99,7 +99,7 @@ public class EditDataDialog extends Dialog<Void> {
         return tab;
     }
 
-    private Tab createSimpleListTab(String title, ObservableList<String> list) {
+    private Tab createSimpleListTab(String title, ObservableList<String> list, boolean addSuperscriptButton) {
         ListView<String> listView = new ListView<>(list);
         listView.setEditable(true);
         listView.setCellFactory(TextFieldListCell.forListView());
@@ -121,7 +121,22 @@ public class EditDataDialog extends Dialog<Void> {
             }
         });
 
-        HBox inputRow = new HBox(8, inputField, addButton, removeButton);
+        HBox inputRow;
+        if (addSuperscriptButton) {
+            Button squaredButton = new Button("²");
+            squaredButton.setOnAction(event -> {
+                int caret = inputField.getCaretPosition();
+                if (caret < 0 || caret > inputField.getText().length()) {
+                    caret = inputField.getText().length();
+                }
+                inputField.insertText(caret, "²");
+                inputField.requestFocus();
+                inputField.positionCaret(caret + 1);
+            });
+            inputRow = new HBox(8, inputField, squaredButton, addButton, removeButton);
+        } else {
+            inputRow = new HBox(8, inputField, addButton, removeButton);
+        }
         HBox.setHgrow(inputField, Priority.ALWAYS);
 
         VBox layout = new VBox(10, listView, inputRow);

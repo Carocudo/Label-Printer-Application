@@ -95,8 +95,8 @@ public class LabelCell extends StackPane {
         setMaxSize(width, height);
     }
 
-    public void setTextPadding(double paddingPx) {
-        textBox.setPadding(new Insets(paddingPx));
+    public void setTextPadding(double topPaddingPx, double leftPaddingPx) {
+        textBox.setPadding(new Insets(topPaddingPx, 0, 0, leftPaddingPx));
     }
 
     public double getFontSize() {

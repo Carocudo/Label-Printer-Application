@@ -7,7 +7,10 @@ public class PrintSettings {
     private double labelHeightMm = LabelSheetConfig.DEFAULT_LABEL_HEIGHT_MM;
     private double gapXmm = LabelSheetConfig.DEFAULT_GAP_X_MM;
     private double gapYmm = LabelSheetConfig.DEFAULT_GAP_Y_MM;
-    private double paddingMm = LabelSheetConfig.DEFAULT_PADDING_MM;
+    private double paddingTopMm = LabelSheetConfig.DEFAULT_PADDING_TOP_MM;
+    private double paddingLeftMm = LabelSheetConfig.DEFAULT_PADDING_LEFT_MM;
+    private double marginTopMm = LabelSheetConfig.DEFAULT_MARGIN_TOP_MM;
+    private double marginLeftMm = LabelSheetConfig.DEFAULT_MARGIN_LEFT_MM;
     private double fontSize = 12;
 
     public double getPageWidthMm() {
@@ -58,12 +61,36 @@ public class PrintSettings {
         this.gapYmm = gapYmm;
     }
 
-    public double getPaddingMm() {
-        return paddingMm;
+    public double getPaddingTopMm() {
+        return paddingTopMm;
     }
 
-    public void setPaddingMm(double paddingMm) {
-        this.paddingMm = paddingMm;
+    public void setPaddingTopMm(double paddingTopMm) {
+        this.paddingTopMm = paddingTopMm;
+    }
+
+    public double getPaddingLeftMm() {
+        return paddingLeftMm;
+    }
+
+    public void setPaddingLeftMm(double paddingLeftMm) {
+        this.paddingLeftMm = paddingLeftMm;
+    }
+
+    public double getMarginTopMm() {
+        return marginTopMm;
+    }
+
+    public void setMarginTopMm(double marginTopMm) {
+        this.marginTopMm = marginTopMm;
+    }
+
+    public double getMarginLeftMm() {
+        return marginLeftMm;
+    }
+
+    public void setMarginLeftMm(double marginLeftMm) {
+        this.marginLeftMm = marginLeftMm;
     }
 
     public double getFontSize() {
