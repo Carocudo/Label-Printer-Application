@@ -35,6 +35,8 @@ public class LabelCell extends StackPane {
         textBox.setAlignment(Pos.TOP_LEFT);
 
         getChildren().addAll(background, textBox);
+        getStyleClass().add("label-cell");
+
         setMinSize(width, height);
         setPrefSize(width, height);
         setMaxSize(width, height);
@@ -132,14 +134,18 @@ public class LabelCell extends StackPane {
     }
 
     private void updateStyles() {
+        getStyleClass().removeAll("label-cell-active", "label-cell-selected");
+
         if (selected) {
             background.setFill(Color.web("#cfe4ff"));
+            getStyleClass().add("label-cell-selected");
         } else {
             background.setFill(Color.WHITE);
         }
         if (active) {
-            background.setStroke(Color.web("#4d7cff"));
+            background.setStroke(Color.web("#2c5f8a"));
             background.setStrokeWidth(2);
+            getStyleClass().add("label-cell-active");
         } else {
             background.setStroke(Color.LIGHTGRAY);
             background.setStrokeWidth(1);

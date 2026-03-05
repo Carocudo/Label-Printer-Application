@@ -11,6 +11,9 @@ import javafx.scene.layout.GridPane;
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
     public SheetSettingsDialog(PrintSettings settings) {
         setTitle("Ark- och etikettinställningar");
+        getDialogPane().getStylesheets().add(
+                getClass().getResource("/com/example/labelprinter/style.css").toExternalForm()
+        );
 
         ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);

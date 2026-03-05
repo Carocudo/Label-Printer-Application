@@ -1,0 +1,271 @@
+/* ══════════════════════════════════════════
+   Base
+══════════════════════════════════════════ */
+.root {
+    -fx-background-color: #f4f5f7;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ══════════════════════════════════════════
+   Buttons
+══════════════════════════════════════════ */
+.button {
+    -fx-background-color: #2c5f8a;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-padding: 6 16 6 16;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #1e4a70;
+}
+
+.button:pressed {
+    -fx-background-color: #163a58;
+}
+
+.button-danger {
+    -fx-background-color: #c0392b;
+}
+
+.button-danger:hover {
+    -fx-background-color: #a93226;
+}
+
+.button-danger:pressed {
+    -fx-background-color: #922b21;
+}
+
+/* ══════════════════════════════════════════
+   Text fields, ComboBoxes, DatePicker
+══════════════════════════════════════════ */
+.text-field,
+.combo-box,
+.date-picker .text-field {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 5 8 5 8;
+}
+
+
+.date-picker .arrow-button {
+    -fx-background-color: #2c5f8a;
+    -fx-padding: 4 8 4 8;
+    -fx-background-radius: 0 4 4 0;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.date-picker:focused,
+.date-picker .text-field:focused {
+    -fx-border-color: #2c5f8a;
+}
+
+.text-field:focused,
+.combo-box:focused {
+    -fx-border-color: #2c5f8a;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 4 8 4 8;
+}
+
+.combo-box-popup .list-view {
+    -fx-border-color: #ced4da;
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #e8f0fe;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2c5f8a;
+    -fx-text-fill: white;
+}
+
+/* ══════════════════════════════════════════
+   Dialog panes
+══════════════════════════════════════════ */
+.dialog-pane {
+    -fx-background-color: #f4f5f7;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: #e9ecef;
+    -fx-padding: 10;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1 0 0 0;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #2c5f8a;
+    -fx-padding: 12;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════
+   TabPane
+══════════════════════════════════════════ */
+.tab-pane {
+    -fx-background-color: #f4f5f7;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #e9ecef;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #dee2e6;
+    -fx-padding: 6 14 6 14;
+    -fx-background-radius: 4 4 0 0;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #c8cdd2;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #2c5f8a;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #f4f5f7;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1;
+}
+
+/* ══════════════════════════════════════════
+   TableView (products tab)
+══════════════════════════════════════════ */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2c5f8a;
+    -fx-padding: 6 10 6 10;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell {
+    -fx-border-color: transparent;
+    -fx-background-color: white;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #e8f0fe;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #cfe4ff;
+    -fx-text-fill: #1a1a1a;
+}
+
+.table-view .table-cell {
+    -fx-padding: 4 10 4 10;
+    -fx-border-color: transparent;
+}
+
+/* ══════════════════════════════════════════
+   ListView (versions/warehouses tabs)
+══════════════════════════════════════════ */
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.list-view .list-cell {
+    -fx-padding: 5 10 5 10;
+    -fx-background-color: white;
+}
+
+.list-view .list-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #e8f0fe;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #cfe4ff;
+    -fx-text-fill: #1a1a1a;
+}
+
+/* ══════════════════════════════════════════
+   Separator
+══════════════════════════════════════════ */
+.separator .line {
+    -fx-border-color: #ced4da;
+}
+
+/* ══════════════════════════════════════════
+   ScrollPane
+══════════════════════════════════════════ */
+.scroll-pane {
+    -fx-background-color: #f4f5f7;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #f4f5f7;
+}
+
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: #f4f5f7;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #ced4da;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #2c5f8a;
+}
+
+/* ══════════════════════════════════════════
+   Label cells  (LabelCell.java — updateStyles())
+══════════════════════════════════════════ */
+.label-cell {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0, 0, 1);
+}
+
+.label-cell-active {
+    -fx-effect: dropshadow(gaussian, rgba(44,95,138,0.35), 6, 0, 0, 2);
+}
+
+.label-cell-selected {
+    -fx-effect: dropshadow(gaussian, rgba(44,95,138,0.2), 4, 0, 0, 1);
+}

@@ -80,6 +80,7 @@ public class MainApp extends Application {
         refreshActiveControls();
 
         Scene scene = new Scene(root, 900, 820);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setTitle("Etikettsutskrift");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -168,8 +169,9 @@ public class MainApp extends Application {
         warehouseCombo.setVisibleRowCount(5);
 
         datePicker = new DatePicker();
-        datePicker.setPromptText("Date");
+        datePicker.setPromptText("Datum");
         datePicker.setMaxWidth(Double.MAX_VALUE);
+        datePicker.prefHeightProperty().bind(productCombo.heightProperty());
 
         productCombo.setOnAction(event -> updateActiveLabelData(productCombo.getValue(),
                 versionCombo.getValue(), warehouseCombo.getValue(), datePicker.getValue()));
@@ -231,6 +233,7 @@ public class MainApp extends Application {
 
         Button clearButton = new Button("Rensa etikett");
         clearButton.setOnAction(event -> clearActiveLabel());
+        clearButton.getStyleClass().add("button-danger");
 
         Button printButton = new Button("Skriv ut");
         printButton.setOnAction(event -> handlePrint());
