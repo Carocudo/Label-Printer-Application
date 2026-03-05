@@ -1,0 +1,58 @@
+name: Build EXE Installer
+
+on:
+  push:
+    tags:
+      - 'v*'  # triggers on v1.0, v1.1, v2.0 etc
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build fat JAR
+        run: mvn clean package
+
+      - name: Install WiX Toolset (needed for jpackage --type exe)
+        run: choco install wixtoolset -y
+
+      - name: Refresh PATH after WiX install
+        run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
+
+      - name: Build EXE installer with jpackage
+        run: |
+          jpackage `
+            --input target/ `
+            --name "Label Printer" `
+            --main-jar label-printer-1.0-SNAPSHOT.jar `
+            --main-class Launcher `
+            --type exe `
+            --java-options "-Dfile.encoding=UTF-8" `
+            --win-shortcut `
+            --win-menu `
+            --app-version ${{ github.ref_name }} `
+            --dest output/
+
+      - name: Create GitHub Release and upload EXE
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Label Printer ${{ github.ref_name }}
+          body: |
+            ## Label Printer ${{ github.ref_name }}
+            
+            ### Installation
+            1. Download `Label-Printer-*.exe` below
+            2. Run the installer
+            3. Launch from Start Menu or Desktop shortcut
+          files: output/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
