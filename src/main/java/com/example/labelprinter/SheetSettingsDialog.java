@@ -10,9 +10,9 @@ import javafx.scene.layout.GridPane;
 
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
     public SheetSettingsDialog(PrintSettings settings) {
-        setTitle("Sheet & Label Settings");
+        setTitle("Ark- och etikettinställningar");
 
-        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
 
         TextField pageWidthField = new TextField(Double.toString(settings.getPageWidthMm()));
@@ -32,25 +32,25 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         grid.setPadding(new Insets(12));
 
         int row = 0;
-        grid.add(new Label("Page width (mm)"), 0, row);
+        grid.add(new Label("Sidbredd (mm)"), 0, row);
         grid.add(pageWidthField, 1, row++);
-        grid.add(new Label("Page height (mm)"), 0, row);
+        grid.add(new Label("Sidhöjd (mm)"), 0, row);
         grid.add(pageHeightField, 1, row++);
-        grid.add(new Label("Label width (mm)"), 0, row);
+        grid.add(new Label("Etikettsbredd (mm)"), 0, row);
         grid.add(labelWidthField, 1, row++);
-        grid.add(new Label("Label height (mm)"), 0, row);
+        grid.add(new Label("Etikettshöjd (mm)"), 0, row);
         grid.add(labelHeightField, 1, row++);
-        grid.add(new Label("Horizontal gap (mm)"), 0, row);
+        grid.add(new Label("Horisontellt gap (mm)"), 0, row);
         grid.add(gapXField, 1, row++);
-        grid.add(new Label("Vertical gap (mm)"), 0, row);
+        grid.add(new Label("Vertikalt gap (mm)"), 0, row);
         grid.add(gapYField, 1, row++);
-        grid.add(new Label("Top margin (mm)"), 0, row);
+        grid.add(new Label("Övre marginal (mm)"), 0, row);
         grid.add(marginTopField, 1, row++);
-        grid.add(new Label("Left margin (mm)"), 0, row);
+        grid.add(new Label("Vänster marginal (mm)"), 0, row);
         grid.add(marginLeftField, 1, row++);
-        grid.add(new Label("Text top padding (mm)"), 0, row);
+        grid.add(new Label("Textavstånd uppifrån (mm)"), 0, row);
         grid.add(paddingTopField, 1, row++);
-        grid.add(new Label("Text left padding (mm)"), 0, row);
+        grid.add(new Label("Textavstånd från vänster (mm)"), 0, row);
         grid.add(paddingLeftField, 1, row);
 
         getDialogPane().setContent(grid);

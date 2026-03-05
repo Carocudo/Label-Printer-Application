@@ -13,10 +13,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DataStore {
-    private static final String PRODUCTS_FILE = "products.csv";
-    private static final String VERSIONS_FILE = "versions.txt";
-    private static final String WAREHOUSES_FILE = "warehouses.txt";
-    private static final String LABELS_FILE = "labels.csv";
+    private static final String PRODUCTS_FILE = "Papperskvalitet.csv";
+    private static final String VERSIONS_FILE = "Ytvikt.txt";
+    private static final String WAREHOUSES_FILE = "Fabrik.txt";
+    private static final String LABELS_FILE = "etiketter.csv";
     private static final String CONFIG_FILE = "config.properties";
 
     private final Path dataDir;

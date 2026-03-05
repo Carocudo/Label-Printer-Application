@@ -57,7 +57,7 @@ public class MainApp extends Application {
             dataStore.ensureDataDir();
             loadInitialData();
         } catch (IOException ex) {
-            showError("Data error", "Unable to load local data.", ex.getMessage());
+            showError("Datafel", "Det gick inte att läsa in lokal data.", ex.getMessage());
         }
 
         BorderPane root = new BorderPane();
@@ -80,7 +80,7 @@ public class MainApp extends Application {
         refreshActiveControls();
 
         Scene scene = new Scene(root, 900, 820);
-        primaryStage.setTitle("Label Printer Application");
+        primaryStage.setTitle("Etikettsutskrift");
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -92,7 +92,7 @@ public class MainApp extends Application {
                 dataStore.saveSimpleList(dataStore.getWarehousesFilename(), warehouseOptions);
                 dataStore.saveSettings(settings);
             } catch (IOException ex) {
-                showError("Save error", "Failed to save label data.", ex.getMessage());
+                showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
             }
         });
     }
@@ -119,7 +119,7 @@ public class MainApp extends Application {
         try {
             savedLabels = dataStore.loadLabels(productsByCode);
         } catch (IOException ex) {
-            showError("Data error", "Unable to load saved labels.", ex.getMessage());
+            showError("Datafel", "Det gick inte att läsa in sparade etiketter.", ex.getMessage());
         }
 
         for (int row = 0; row < LabelSheetConfig.ROWS; row++) {
@@ -153,17 +153,17 @@ public class MainApp extends Application {
 
     private VBox buildControls() {
         productCombo = new ComboBox<>(productOptions);
-        productCombo.setPromptText("Product");
+        productCombo.setPromptText("Papperskvalitet");
         productCombo.setMaxWidth(Double.MAX_VALUE);
         productCombo.setVisibleRowCount(5);
 
         versionCombo = new ComboBox<>(versionOptions);
-        versionCombo.setPromptText("Version");
+        versionCombo.setPromptText("Ytvikt");
         versionCombo.setMaxWidth(Double.MAX_VALUE);
         versionCombo.setVisibleRowCount(5);
 
         warehouseCombo = new ComboBox<>(warehouseOptions);
-        warehouseCombo.setPromptText("Warehouse");
+        warehouseCombo.setPromptText("Fabrik");
         warehouseCombo.setMaxWidth(Double.MAX_VALUE);
         warehouseCombo.setVisibleRowCount(5);
 
@@ -180,7 +180,7 @@ public class MainApp extends Application {
         datePicker.setOnAction(event -> updateActiveLabelData(productCombo.getValue(),
                 versionCombo.getValue(), warehouseCombo.getValue(), datePicker.getValue()));
 
-        Button editDataButton = new Button("Edit products & versions");
+        Button editDataButton = new Button("Redigera papperskvalitet & ytvikt");
         editDataButton.setOnAction(event -> {
             EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, payload -> {
                 productOptions.setAll(payload.products());
@@ -191,7 +191,7 @@ public class MainApp extends Application {
                     dataStore.saveSimpleList(dataStore.getVersionsFilename(), versionOptions);
                     dataStore.saveSimpleList(dataStore.getWarehousesFilename(), warehouseOptions);
                 } catch (IOException ex) {
-                    showError("Save error", "Unable to save product lists.", ex.getMessage());
+                    showError("Sparfel", "Det gick inte att spara produktlistor.", ex.getMessage());
                 }
                 reconcileProducts();
                 refreshActiveControls();
@@ -199,7 +199,7 @@ public class MainApp extends Application {
             dialog.showAndWait();
         });
 
-        Button editFontButton = new Button("Edit Font parameters");
+        Button editFontButton = new Button("Redigera teckenstil");
         editFontButton.setOnAction(event -> {
             FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize());
             Optional<Double> result = dialog.showAndWait();
@@ -209,12 +209,12 @@ public class MainApp extends Application {
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
-                    showError("Save error", "Unable to save font size.", ex.getMessage());
+                    showError("Sparfel", "Det gick inte att spara teckenstorlek.", ex.getMessage());
                 }
             });
         });
 
-        Button sheetSettingsButton = new Button("Sheet settings");
+        Button sheetSettingsButton = new Button("Arkinställningar");
         sheetSettingsButton.setOnAction(event -> {
             SheetSettingsDialog dialog = new SheetSettingsDialog(settings);
             Optional<PrintSettings> result = dialog.showAndWait();
@@ -224,15 +224,15 @@ public class MainApp extends Application {
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
-                    showError("Save error", "Unable to save sheet settings.", ex.getMessage());
+                    showError("Sparfel", "Det gick inte att spara arkinställningar.", ex.getMessage());
                 }
             });
         });
 
-        Button clearButton = new Button("Clear label");
+        Button clearButton = new Button("Rensa etikett");
         clearButton.setOnAction(event -> clearActiveLabel());
 
-        Button printButton = new Button("Print");
+        Button printButton = new Button("Skriv ut");
         printButton.setOnAction(event -> handlePrint());
 
         HBox row1 = new HBox(10, productCombo, versionCombo, warehouseCombo, datePicker);
@@ -283,7 +283,7 @@ public class MainApp extends Application {
             try {
                 dataStore.saveLabels(labelCells);
             } catch (IOException ex) {
-                showError("Save error", "Unable to save labels.", ex.getMessage());
+                showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
             }
             return;
         }
@@ -300,7 +300,7 @@ public class MainApp extends Application {
         try {
             dataStore.saveLabels(labelCells);
         } catch (IOException ex) {
-            showError("Save error", "Unable to save labels.", ex.getMessage());
+            showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
         }
     }
 
@@ -384,13 +384,13 @@ public class MainApp extends Application {
     private void handlePrint() {
         boolean hasSelection = labelCells.stream().anyMatch(LabelCell::isSelected);
         if (!hasSelection) {
-            showAlert("Nothing to print", "Select at least one label to print.");
+            showAlert("Inget att skriva ut", "Välj minst en etikett att skriva ut.");
             return;
         }
 
         PrinterJob job = PrinterJob.createPrinterJob();
         if (job == null) {
-            showAlert("Printer unavailable", "No printer job could be created.");
+            showAlert("Skrivare ej tillgänglig", "Kunde inte skapa utskriftsjobb.");
             return;
         }
         boolean proceed = job.showPrintDialog(null);
@@ -403,7 +403,7 @@ public class MainApp extends Application {
         if (success) {
             job.endJob();
         } else {
-            showAlert("Print failed", "Printer job did not complete.");
+            showAlert("Utskrift misslyckades", "Utskriftsjobbet slutfördes inte.");
         }
     }
 

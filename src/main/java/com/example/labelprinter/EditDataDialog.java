@@ -37,15 +37,15 @@ public class EditDataDialog extends Dialog<Void> {
         this.versions = FXCollections.observableArrayList(versions);
         this.warehouses = FXCollections.observableArrayList(warehouses);
 
-        setTitle("Edit Products & Versions");
+        setTitle("Redigera kvaliteter & ytvikter");
         initModality(Modality.APPLICATION_MODAL);
 
-        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
         TabPane tabPane = new TabPane();
-        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab("Versions", this.versions, true),
-                createSimpleListTab("Warehouses", this.warehouses, false));
+        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab("Ytvikter", this.versions, true),
+                createSimpleListTab("Fabriker", this.warehouses, false));
 
         getDialogPane().setContent(tabPane);
         getDialogPane().setPrefSize(700, 420);
@@ -64,13 +64,13 @@ public class EditDataDialog extends Dialog<Void> {
         TableView<Product> tableView = new TableView<>(products);
         tableView.setEditable(true);
 
-        TableColumn<Product, String> codeColumn = new TableColumn<>("Code");
+        TableColumn<Product, String> codeColumn = new TableColumn<>("Kod");
         codeColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getCode()));
         codeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         codeColumn.setOnEditCommit(event -> event.getRowValue().setCode(event.getNewValue()));
         codeColumn.setPrefWidth(200);
 
-        TableColumn<Product, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Product, String> nameColumn = new TableColumn<>("Namn");
         nameColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getName()));
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameColumn.setOnEditCommit(event -> event.getRowValue().setName(event.getNewValue()));
@@ -78,10 +78,10 @@ public class EditDataDialog extends Dialog<Void> {
 
         tableView.getColumns().addAll(codeColumn, nameColumn);
 
-        Button addButton = new Button("Add");
+        Button addButton = new Button("Lägg till");
         addButton.setOnAction(event -> products.add(new Product("", "")));
 
-        Button removeButton = new Button("Remove");
+        Button removeButton = new Button("Ta bort");
         removeButton.setOnAction(event -> {
             Product selected = tableView.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -94,7 +94,7 @@ public class EditDataDialog extends Dialog<Void> {
         layout.setPadding(new Insets(10));
         VBox.setVgrow(tableView, Priority.ALWAYS);
 
-        Tab tab = new Tab("Products", layout);
+        Tab tab = new Tab("Papperskvaliteter", layout);
         tab.setClosable(false);
         return tab;
     }
@@ -105,15 +105,15 @@ public class EditDataDialog extends Dialog<Void> {
         listView.setCellFactory(TextFieldListCell.forListView());
 
         TextField inputField = new TextField();
-        inputField.setPromptText("Add new " + title.toLowerCase());
-        Button addButton = new Button("Add");
+        inputField.setPromptText("Lägg till ny " + title.toLowerCase());
+        Button addButton = new Button("Lägg till");
         addButton.setOnAction(event -> {
             if (!inputField.getText().isBlank()) {
                 list.add(inputField.getText().trim());
                 inputField.clear();
             }
         });
-        Button removeButton = new Button("Remove");
+        Button removeButton = new Button("Ta bort");
         removeButton.setOnAction(event -> {
             String selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -124,6 +124,7 @@ public class EditDataDialog extends Dialog<Void> {
         HBox inputRow;
         if (addSuperscriptButton) {
             Button squaredButton = new Button("²");
+
             squaredButton.setOnAction(event -> {
                 int caret = inputField.getCaretPosition();
                 if (caret < 0 || caret > inputField.getText().length()) {
