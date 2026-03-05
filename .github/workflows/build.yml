@@ -30,6 +30,7 @@ jobs:
 
       - name: Build EXE installer with jpackage
         run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
           jpackage `
             --input target/ `
             --name "Label Printer" `
@@ -39,7 +40,7 @@ jobs:
             --java-options "-Dfile.encoding=UTF-8" `
             --win-shortcut `
             --win-menu `
-            --app-version ${{ github.ref_name }} `
+            --app-version $version `
             --dest output/
 
       - name: Create GitHub Release and upload EXE
