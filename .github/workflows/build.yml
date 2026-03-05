@@ -43,7 +43,7 @@ jobs:
             --app-version $version `
             --vendor "Carocudo Inc." `
             --description "Label Printer Application" `
-            --copyright "Copyright 2026"
+            --copyright "Copyright 2026" `
             --dest output/
 
       - name: Create GitHub Release and upload EXE
