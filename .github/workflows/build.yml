@@ -1,4 +1,4 @@
-name: Build EXE Installer
+name: Build EXE Installer and App-Image
 
 on:
   push:
@@ -32,12 +32,13 @@ jobs:
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
 
       - name: Build EXE installer with jpackage
+        shell: pwsh
         run: |
           $version = "${{ github.ref_name }}".TrimStart("v")
           jpackage `
             --input target/ `
             --name "Label Printer" `
-            --main-jar label-printer-1.0-SNAPSHOT.jar `
+            --main-jar "label-printer-1.0-SNAPSHOT.jar" `
             --main-class Launcher `
             --type exe `
             --java-options "-Dfile.encoding=UTF-8" `
@@ -49,17 +50,52 @@ jobs:
             --copyright "Copyright 2026" `
             --dest output/
 
-      - name: Create GitHub Release and upload EXE
+      - name: Build app-image with jpackage
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          jpackage `
+            --input target/ `
+            --name "Label Printer" `
+            --main-jar "label-printer-1.0-SNAPSHOT.jar" `
+            --main-class Launcher `
+            --type app-image `
+            --java-options "-Dfile.encoding=UTF-8" `
+            --app-version $version `
+            --vendor "Carocudo Inc." `
+            --description "Label Printer Application" `
+            --dest output/
+
+      - name: Zip app-image
+        shell: pwsh
+        run: |
+          $appImageDir = Join-Path "output" "Label Printer"
+          if (!(Test-Path $appImageDir)) {
+            Write-Error "App-image directory not found at $appImageDir"
+          }
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          $zipPath = Join-Path "output" "Label-Printer-app-image-$version.zip"
+          if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+          Compress-Archive -Path "$appImageDir\*" -DestinationPath $zipPath
+
+      - name: Create GitHub Release and upload EXE + App-Image ZIP
         uses: softprops/action-gh-release@v1
         with:
           name: Label Printer ${{ github.ref_name }}
           body: |
             ## Label Printer ${{ github.ref_name }}
-            
-            ### Installation
+
+            ### Installation (Windows EXE)
             1. Download `Label-Printer-*.exe` below
             2. Run the installer
             3. Launch from Start Menu or Desktop shortcut
-          files: output/*.exe
+
+            ### Portable App (App-Image)
+            1. Download `Label-Printer-app-image-*.zip` below
+            2. Unzip
+            3. Run the launcher inside the unzipped folder
+          files: |
+            output/*.exe
+            output/Label-Printer-app-image-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
