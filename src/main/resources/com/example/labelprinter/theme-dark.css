@@ -319,3 +319,22 @@
 .label-cell-selected {
     -fx-effect: dropshadow(gaussian, rgba(74,144,217,0.3), 4, 0, 0, 1);
 }
+.label-cell-bg {
+    -fx-background-color: #2a2a3e;
+    -fx-border-color: #44445a;
+    -fx-border-width: 1;
+}
+
+.label-cell-bg-selected {
+    -fx-background-color: #2a5080;
+    -fx-border-color: #4a90d9;
+    -fx-border-width: 1;
+}
+
+.label-cell-active .label-cell-bg {
+    -fx-border-color: #4a90d9;
+    -fx-border-width: 2;
+}
+.label-cell-bg .label {
+    -fx-text-fill: #e0e0e0;
+}
