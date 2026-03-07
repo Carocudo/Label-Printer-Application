@@ -1,10 +1,32 @@
+# ── Maven ──
+/target/
+/output/
+dependency-reduced-pom.xml
+
+# ── Data files (local runtime data, not source) ──
 /data/
+
+# ── IntelliJ IDEA ──
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ── OS files ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──
+*.log
+
+# ── Gradle leftovers ──
 /build/
 /.gradle/
 /out/
-/output
-/target
-/gradle
-dependency-reduced-pom.xml
+/gradle/
 gradlew
 gradlew.bat
+build.gradle
+gradle.properties
+settings.gradle

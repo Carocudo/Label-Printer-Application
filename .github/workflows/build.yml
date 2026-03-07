@@ -41,7 +41,7 @@ jobs:
       - name: Build EXE installer with jpackage
         shell: pwsh
         run: |
-          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart("v") }
+          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}".TrimStart("v") } else { "${{ github.ref_name }}".TrimStart("v") }
           jpackage `
             --input target/ `
             --name "Label Printer" `
@@ -60,7 +60,7 @@ jobs:
       - name: Build app-image with jpackage
         shell: pwsh
         run: |
-          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart("v") }
+          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}".TrimStart("v") } else { "${{ github.ref_name }}".TrimStart("v") }
           jpackage `
             --input target/ `
             --name "Label Printer" `
