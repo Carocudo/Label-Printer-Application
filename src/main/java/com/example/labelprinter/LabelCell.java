@@ -3,15 +3,14 @@ package com.example.labelprinter;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class LabelCell extends StackPane {
     private final int row;
     private final int col;
-    private final Rectangle background;
+    private final Pane background;
     private final VBox textBox;
     private final Label productLabel = new Label();
     private final Label versionLabel = new Label();
@@ -21,14 +20,14 @@ public class LabelCell extends StackPane {
     private boolean active;
     private boolean selected;
     private double fontSize = 12;
+    // Debugging field and method to toggle border visibility
+    private boolean debugBorders = false;
 
     public LabelCell(int row, int col, double width, double height) {
         this.row = row;
         this.col = col;
-        this.background = new Rectangle(width, height);
-        background.setFill(Color.WHITE);
-        background.setStroke(Color.LIGHTGRAY);
-        background.setStrokeWidth(1);
+        this.background = new Pane();
+        background.getStyleClass().add("label-cell-bg");
 
         textBox = new VBox(2, productLabel, versionLabel, warehouseLabel, dateLabel);
         textBox.setPadding(new Insets(4));
@@ -84,14 +83,10 @@ public class LabelCell extends StackPane {
         setSelected(!selected);
     }
 
-    public void setFontSize(double fontSize) {
-        this.fontSize = fontSize;
-        updateFontSize();
-    }
-
     public void setDimensions(double width, double height) {
-        background.setWidth(width);
-        background.setHeight(height);
+        background.setPrefSize(width, height);
+        background.setMinSize(width, height);
+        background.setMaxSize(width, height);
         setMinSize(width, height);
         setPrefSize(width, height);
         setMaxSize(width, height);
@@ -103,6 +98,11 @@ public class LabelCell extends StackPane {
 
     public double getFontSize() {
         return fontSize;
+    }
+
+    public void setFontSize(double fontSize) {
+        this.fontSize = fontSize;
+        updateFontSize();
     }
 
     public void refresh() {
@@ -135,20 +135,19 @@ public class LabelCell extends StackPane {
 
     private void updateStyles() {
         getStyleClass().removeAll("label-cell-active", "label-cell-selected");
+        background.getStyleClass().removeAll("label-cell-bg-selected");
 
         if (selected) {
-            background.setFill(Color.web("#cfe4ff"));
+            background.getStyleClass().add("label-cell-bg-selected");
             getStyleClass().add("label-cell-selected");
-        } else {
-            background.setFill(Color.WHITE);
         }
         if (active) {
-            background.setStroke(Color.web("#2c5f8a"));
-            background.setStrokeWidth(2);
             getStyleClass().add("label-cell-active");
+        }
+        if (debugBorders) {
+            background.setStyle("-fx-border-color: red; -fx-border-width: 1;");
         } else {
-            background.setStroke(Color.LIGHTGRAY);
-            background.setStrokeWidth(1);
+            background.setStyle(""); // clears debug style
         }
     }
 
@@ -167,4 +166,11 @@ public class LabelCell extends StackPane {
             selected = false;
         }
     }
+
+    // Add method
+    public void setDebugBorders(boolean debug) {
+        this.debugBorders = debug;
+        updateStyles();
+    }
+
 }

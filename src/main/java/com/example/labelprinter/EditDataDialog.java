@@ -3,18 +3,8 @@ package com.example.labelprinter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -38,9 +28,7 @@ public class EditDataDialog extends Dialog<Void> {
         this.warehouses = FXCollections.observableArrayList(warehouses);
 
         setTitle("Redigera kvaliteter & ytvikter");
-        getDialogPane().getStylesheets().add(
-                getClass().getResource("/com/example/labelprinter/style.css").toExternalForm()
-        );
+
         initModality(Modality.APPLICATION_MODAL);
 
         ButtonType saveButtonType = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);

@@ -5,11 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataStore {
@@ -153,6 +149,9 @@ public class DataStore {
         try (var input = Files.newInputStream(path)) {
             properties.load(input);
         }
+
+        settings.setTheme(properties.getProperty("theme", "corporate"));
+
         settings.setFontSize(parseDouble(properties.getProperty("fontSize"), settings.getFontSize()));
         settings.setPageWidthMm(parseDouble(properties.getProperty("pageWidthMm"), settings.getPageWidthMm()));
         settings.setPageHeightMm(parseDouble(properties.getProperty("pageHeightMm"), settings.getPageHeightMm()));
@@ -172,6 +171,9 @@ public class DataStore {
 
     public void saveSettings(PrintSettings settings) throws IOException {
         Properties properties = new Properties();
+
+        properties.setProperty("theme", settings.getTheme());
+
         properties.setProperty("fontSize", Double.toString(settings.getFontSize()));
         properties.setProperty("pageWidthMm", Double.toString(settings.getPageWidthMm()));
         properties.setProperty("pageHeightMm", Double.toString(settings.getPageHeightMm()));

@@ -2,3 +2,9 @@
 /build/
 /.gradle/
 /out/
+/output
+/target
+/gradle
+dependency-reduced-pom.xml
+gradlew
+gradlew.bat

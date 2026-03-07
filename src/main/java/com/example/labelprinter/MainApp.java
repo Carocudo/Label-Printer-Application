@@ -7,20 +7,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.print.PrinterJob;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -51,6 +40,14 @@ public class MainApp extends Application {
     private ComboBox<String> warehouseCombo;
     private DatePicker datePicker;
 
+    private Scene scene;
+
+    private boolean debugPrint = false;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -79,8 +76,8 @@ public class MainApp extends Application {
         root.setBottom(controls);
         refreshActiveControls();
 
-        Scene scene = new Scene(root, 900, 820);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene = new Scene(root, 900, 820);
+        applyTheme(settings.getTheme(), scene);
         primaryStage.setTitle("Etikettsutskrift");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -198,12 +195,14 @@ public class MainApp extends Application {
                 reconcileProducts();
                 refreshActiveControls();
             });
+            applyThemeToDialog(dialog);
             dialog.showAndWait();
         });
 
         Button editFontButton = new Button("Redigera teckenstil");
         editFontButton.setOnAction(event -> {
             FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize());
+            applyThemeToDialog(dialog);
             Optional<Double> result = dialog.showAndWait();
             result.ifPresent(size -> {
                 settings.setFontSize(Math.round(size));
@@ -219,10 +218,12 @@ public class MainApp extends Application {
         Button sheetSettingsButton = new Button("Arkinställningar");
         sheetSettingsButton.setOnAction(event -> {
             SheetSettingsDialog dialog = new SheetSettingsDialog(settings);
+            applyThemeToDialog(dialog);
             Optional<PrintSettings> result = dialog.showAndWait();
             result.ifPresent(updated -> {
                 settings = updated;
                 applySettingsToCells();
+                applyTheme(settings.getTheme(), scene);
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
@@ -235,6 +236,18 @@ public class MainApp extends Application {
         clearButton.setOnAction(event -> clearActiveLabel());
         clearButton.getStyleClass().add("button-danger");
 
+//        Button debugButton = new Button("Debug borders");
+//        debugButton.setOnAction(e ->
+//                labelCells.forEach(c -> c.setDebugBorders(true))
+//        );
+
+        Button debugPrintButton = new Button("Debug OFF");
+        debugPrintButton.setOnAction(e -> {
+            debugPrint = !debugPrint;
+            labelCells.forEach(c -> c.setDebugBorders(debugPrint));
+            debugPrintButton.setText(debugPrint ? "Debug ON" : "Debug OFF");
+        });
+
         Button printButton = new Button("Skriv ut");
         printButton.setOnAction(event -> handlePrint());
 
@@ -244,7 +257,12 @@ public class MainApp extends Application {
         HBox.setHgrow(warehouseCombo, Priority.ALWAYS);
         HBox.setHgrow(datePicker, Priority.ALWAYS);
 
-        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, printButton);
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+//        Debug button is removed from UI but left here for easy testing of print layout during development
+//        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, spacer, debugPrintButton, printButton);
+        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, spacer, printButton);
         row2.setAlignment(Pos.CENTER_LEFT);
 
         VBox container = new VBox(12, new Separator(), row1, row2);
@@ -257,8 +275,26 @@ public class MainApp extends Application {
         return input.stream()
                 .filter(value -> value != null && !value.isBlank())
                 .map(String::trim)
-                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .sorted((a, b) -> {
+                    // Extract leading number for numeric sort
+                    double numA = extractLeadingNumber(a);
+                    double numB = extractLeadingNumber(b);
+                    if (numA != Double.NaN && numB != Double.NaN) {
+                        return Double.compare(numA, numB);
+                    }
+                    return String.CASE_INSENSITIVE_ORDER.compare(a, b);
+                })
                 .collect(Collectors.toList());
+    }
+
+    private double extractLeadingNumber(String value) {
+        try {
+            // Grab just the numeric part at the start e.g. "100 g/m²" → 100.0
+            String numeric = value.trim().split("[^0-9.,]")[0].replace(",", ".");
+            return Double.parseDouble(numeric);
+        } catch (NumberFormatException e) {
+            return Double.NaN;
+        }
     }
 
     private void setActiveCell(LabelCell cell) {
@@ -415,18 +451,28 @@ public class MainApp extends Application {
         double labelHeight = LabelSheetConfig.mmToPoints(settings.getLabelHeightMm());
         double gapX = LabelSheetConfig.mmToPoints(settings.getGapXmm());
         double gapY = LabelSheetConfig.mmToPoints(settings.getGapYmm());
-
-        double printableWidth = job.getJobSettings().getPageLayout().getPrintableWidth();
-        double printableHeight = job.getJobSettings().getPageLayout().getPrintableHeight();
-
-        double pageWidth = LabelSheetConfig.mmToPoints(settings.getPageWidthMm());
-        double pageHeight = LabelSheetConfig.mmToPoints(settings.getPageHeightMm());
-        double availableWidth = Math.min(printableWidth, pageWidth);
-        double availableHeight = Math.min(printableHeight, pageHeight);
         double marginLeft = LabelSheetConfig.mmToPoints(settings.getMarginLeftMm());
         double marginTop = LabelSheetConfig.mmToPoints(settings.getMarginTopMm());
-        double offsetX = Math.min(Math.max(0, marginLeft), availableWidth);
-        double offsetY = Math.min(Math.max(0, marginTop), availableHeight);
+
+        // Request minimum margin page layout from the printer
+        javafx.print.Printer printer = job.getPrinter();
+        javafx.print.PageLayout pageLayout = printer.createPageLayout(
+                javafx.print.Paper.A4,
+                javafx.print.PageOrientation.PORTRAIT,
+                javafx.print.Printer.MarginType.HARDWARE_MINIMUM
+        );
+
+        // Apply the new layout to the job
+        job.getJobSettings().setPageLayout(pageLayout);
+
+        double printableWidth = pageLayout.getPrintableWidth();
+        double printableHeight = pageLayout.getPrintableHeight();
+        double hwMarginLeft = pageLayout.getLeftMargin();
+        double hwMarginTop = pageLayout.getTopMargin();
+
+        // Margin is from paper edge, subtract hardware minimum to get correct offset
+        double offsetX = Math.max(0, marginLeft - hwMarginLeft);
+        double offsetY = Math.max(0, marginTop - hwMarginTop);
 
         Pane root = new Pane();
         root.setPrefSize(printableWidth, printableHeight);
@@ -439,17 +485,31 @@ public class MainApp extends Application {
             int col = cell.getCol();
             double x = offsetX + col * (labelWidth + gapX);
             double y = offsetY + row * (labelHeight + gapY);
-            VBox labelNode = createPrintLabel(cell.getData(), labelWidth, labelHeight);
+            VBox labelNode = createPrintLabel(cell.getData(), labelWidth, labelHeight, debugPrint);
             labelNode.setLayoutX(x);
             labelNode.setLayoutY(y);
             root.getChildren().add(labelNode);
         }
+
+        // DEBUG — remove when fixed
+//        System.out.println("=== PRINT DEBUG ===");
+//        System.out.println("Printable area (pts): " + printableWidth + " x " + printableHeight);
+//        System.out.println("Hardware margins (mm) - top: " + hwMarginTop * 25.4 / 72.0 + " left: " + hwMarginLeft * 25.4 / 72.0);
+//        System.out.println("Your margin (mm) - top: " + marginTop * 25.4 / 72.0 + " left: " + marginLeft * 25.4 / 72.0);
+//        System.out.println("Final offset (mm) - top: " + offsetY * 25.4 / 72.0 + " left: " + offsetX * 25.4 / 72.0);
+//        System.out.println("===================");
+
         return root;
     }
 
-    private VBox createPrintLabel(LabelData data, double width, double height) {
+    private VBox createPrintLabel(LabelData data, double width, double height, boolean debug) {
         VBox box = new VBox(2);
         box.setPrefSize(width, height);
+
+        if (debug) {
+            box.setStyle("-fx-border-color: red; -fx-border-width: 1;");
+        }
+
         double paddingTop = LabelSheetConfig.mmToPoints(settings.getPaddingTopMm());
         double paddingLeft = LabelSheetConfig.mmToPoints(settings.getPaddingLeftMm());
         box.setPadding(new Insets(paddingTop, 0, 0, paddingLeft));
@@ -490,7 +550,29 @@ public class MainApp extends Application {
         alert.showAndWait();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void applyTheme(String theme, Scene scene) {
+        scene.getStylesheets().clear();
+        String css = switch (theme) {
+            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
+            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
+            default -> "/com/example/labelprinter/style.css";
+        };
+        scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
+    }
+
+    private void applyThemeToDialog(Dialog<?> dialog) {
+        dialog.getDialogPane().getStylesheets().add(
+                getClass().getResource(getThemePath(settings.getTheme())).toExternalForm()
+        );
+    }
+
+    private String getThemePath(String theme) {
+        return switch (theme) {
+            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
+            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
+            default -> "/com/example/labelprinter/style.css";
+        };
     }
 }
