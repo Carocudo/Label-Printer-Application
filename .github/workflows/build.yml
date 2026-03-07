@@ -5,10 +5,12 @@ on:
     tags:
       - 'v*'  # triggers on v1.0, v1.1, v2.0 etc
 
-#on:
-#  push:
-#    branches:
-#      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 1.0)'
+        required: true
+        default: '1.0'
 
 permissions:
   contents: write
@@ -39,7 +41,7 @@ jobs:
       - name: Build EXE installer with jpackage
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart("v")
+          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart("v") }
           jpackage `
             --input target/ `
             --name "Label Printer" `
@@ -58,7 +60,7 @@ jobs:
       - name: Build app-image with jpackage
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart("v")
+          $version = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart("v") }
           jpackage `
             --input target/ `
             --name "Label Printer" `
