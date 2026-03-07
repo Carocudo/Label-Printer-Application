@@ -85,6 +85,12 @@ jobs:
           if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
           Compress-Archive -Path "$appImageDir\*" -DestinationPath $zipPath
 
+      - name: Create tag for manual trigger
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git tag v${{ github.event.inputs.version }}
+          git push origin v${{ github.event.inputs.version }}
+
       - name: Create GitHub Release and upload EXE + App-Image ZIP
         uses: softprops/action-gh-release@v1
         with:
