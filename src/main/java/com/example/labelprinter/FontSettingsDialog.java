@@ -7,9 +7,6 @@ import javafx.scene.layout.VBox;
 public class FontSettingsDialog extends Dialog<Double> {
     public FontSettingsDialog(double currentSize) {
         setTitle("Redigera teckenstil ");
-        getDialogPane().getStylesheets().add(
-                getClass().getResource("/com/example/labelprinter/style.css").toExternalForm()
-        );
 
         ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);

@@ -28,9 +28,7 @@ public class EditDataDialog extends Dialog<Void> {
         this.warehouses = FXCollections.observableArrayList(warehouses);
 
         setTitle("Redigera kvaliteter & ytvikter");
-        getDialogPane().getStylesheets().add(
-                getClass().getResource("/com/example/labelprinter/style.css").toExternalForm()
-        );
+
         initModality(Modality.APPLICATION_MODAL);
 
         ButtonType saveButtonType = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);

@@ -7,9 +7,6 @@ import javafx.scene.layout.GridPane;
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
     public SheetSettingsDialog(PrintSettings settings) {
         setTitle("Ark- och etikettinställningar");
-        getDialogPane().getStylesheets().add(
-                getClass().getResource("/com/example/labelprinter/style.css").toExternalForm()
-        );
 
         ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
@@ -26,7 +23,7 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         TextField paddingLeftField = new TextField(Double.toString(settings.getPaddingLeftMm()));
 
         ComboBox<String> themeCombo = new ComboBox<>();
-        themeCombo.getItems().addAll("corporate", "dark", "minimal", "contrast");
+        themeCombo.getItems().addAll("Corporate", "Dark", "Minimal", "Ocean");
         themeCombo.setValue(settings.getTheme());
 
         GridPane grid = new GridPane();

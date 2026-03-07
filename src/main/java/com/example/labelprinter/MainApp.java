@@ -195,12 +195,14 @@ public class MainApp extends Application {
                 reconcileProducts();
                 refreshActiveControls();
             });
+            applyThemeToDialog(dialog);
             dialog.showAndWait();
         });
 
         Button editFontButton = new Button("Redigera teckenstil");
         editFontButton.setOnAction(event -> {
             FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize());
+            applyThemeToDialog(dialog);
             Optional<Double> result = dialog.showAndWait();
             result.ifPresent(size -> {
                 settings.setFontSize(Math.round(size));
@@ -216,6 +218,7 @@ public class MainApp extends Application {
         Button sheetSettingsButton = new Button("Arkinställningar");
         sheetSettingsButton.setOnAction(event -> {
             SheetSettingsDialog dialog = new SheetSettingsDialog(settings);
+            applyThemeToDialog(dialog);
             Optional<PrintSettings> result = dialog.showAndWait();
             result.ifPresent(updated -> {
                 settings = updated;
@@ -550,11 +553,26 @@ public class MainApp extends Application {
     private void applyTheme(String theme, Scene scene) {
         scene.getStylesheets().clear();
         String css = switch (theme) {
-            case "dark" -> "/com/example/labelprinter/theme-dark.css";
-            case "minimal" -> "/com/example/labelprinter/theme-minimal.css";
-            case "contrast" -> "/com/example/labelprinter/theme-contrast.css";
+            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
+            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
             default -> "/com/example/labelprinter/style.css";
         };
         scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
+    }
+
+    private void applyThemeToDialog(Dialog<?> dialog) {
+        dialog.getDialogPane().getStylesheets().add(
+                getClass().getResource(getThemePath(settings.getTheme())).toExternalForm()
+        );
+    }
+
+    private String getThemePath(String theme) {
+        return switch (theme) {
+            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
+            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
+            default -> "/com/example/labelprinter/style.css";
+        };
     }
 }
