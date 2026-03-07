@@ -51,6 +51,8 @@ public class MainApp extends Application {
     private ComboBox<String> warehouseCombo;
     private DatePicker datePicker;
 
+    private Scene scene;
+
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -79,8 +81,8 @@ public class MainApp extends Application {
         root.setBottom(controls);
         refreshActiveControls();
 
-        Scene scene = new Scene(root, 900, 820);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene = new Scene(root, 900, 820);
+        applyTheme(settings.getTheme(), scene);
         primaryStage.setTitle("Etikettsutskrift");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -223,6 +225,7 @@ public class MainApp extends Application {
             result.ifPresent(updated -> {
                 settings = updated;
                 applySettingsToCells();
+                applyTheme(settings.getTheme(), scene);
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
@@ -488,6 +491,17 @@ public class MainApp extends Application {
         alert.setHeaderText(message);
         alert.setContentText(details);
         alert.showAndWait();
+    }
+
+    private void applyTheme(String theme, Scene scene) {
+        scene.getStylesheets().clear();
+        String css = switch (theme) {
+            case "dark"     -> "/com/example/labelprinter/theme-dark.css";
+            case "minimal"  -> "/com/example/labelprinter/theme-minimal.css";
+            case "contrast" -> "/com/example/labelprinter/theme-contrast.css";
+            default         -> "/com/example/labelprinter/style.css";
+        };
+        scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
     }
 
     public static void main(String[] args) {

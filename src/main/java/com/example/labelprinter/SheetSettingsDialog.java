@@ -1,11 +1,7 @@
 package com.example.labelprinter;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
@@ -28,6 +24,10 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         TextField marginLeftField = new TextField(Double.toString(settings.getMarginLeftMm()));
         TextField paddingTopField = new TextField(Double.toString(settings.getPaddingTopMm()));
         TextField paddingLeftField = new TextField(Double.toString(settings.getPaddingLeftMm()));
+
+        ComboBox<String> themeCombo = new ComboBox<>();
+        themeCombo.getItems().addAll("corporate", "dark", "minimal", "contrast");
+        themeCombo.setValue(settings.getTheme());
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -54,7 +54,10 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         grid.add(new Label("Textavstånd uppifrån (mm)"), 0, row);
         grid.add(paddingTopField, 1, row++);
         grid.add(new Label("Textavstånd från vänster (mm)"), 0, row);
-        grid.add(paddingLeftField, 1, row);
+        grid.add(paddingLeftField, 1, row++);
+
+        grid.add(new Label("Tema"), 0, row);
+        grid.add(themeCombo, 1, row++);
 
         getDialogPane().setContent(grid);
 
@@ -74,6 +77,7 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
             updated.setMarginLeftMm(parseNonNegativeValue(marginLeftField.getText(), settings.getMarginLeftMm()));
             updated.setPaddingTopMm(parseNonNegativeValue(paddingTopField.getText(), settings.getPaddingTopMm()));
             updated.setPaddingLeftMm(parseNonNegativeValue(paddingLeftField.getText(), settings.getPaddingLeftMm()));
+            updated.setTheme(themeCombo.getValue());
             return updated;
         });
     }

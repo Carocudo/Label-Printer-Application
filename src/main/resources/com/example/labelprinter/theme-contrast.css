@@ -1,0 +1,361 @@
+/* ══════════════════════════════════════════
+   High Contrast Theme
+══════════════════════════════════════════ */
+.root {
+    -fx-background-color: #000000;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ══════════════════════════════════════════
+   Buttons
+══════════════════════════════════════════ */
+.button {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 6 16 6 16;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+}
+
+.button:pressed {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+    -fx-border-color: #ffff00;
+}
+
+.button-danger {
+    -fx-border-color: #ff4444;
+    -fx-text-fill: #ff4444;
+    -fx-background-color: #000000;
+}
+
+.button-danger:hover {
+    -fx-background-color: #ff4444;
+    -fx-text-fill: #000000;
+}
+
+.button-danger:pressed {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+/* ══════════════════════════════════════════
+   Text fields, ComboBoxes, DatePicker
+══════════════════════════════════════════ */
+.text-field,
+.combo-box,
+.date-picker .text-field {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 5 8 5 8;
+}
+
+.text-field:focused,
+.combo-box:focused {
+    -fx-border-color: #ffff00;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #000000;
+    -fx-padding: 4 8 4 8;
+}
+
+.combo-box-popup .list-view {
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-background-color: #000000;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #000000;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #333333;
+    -fx-text-fill: #ffffff;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+/* ══════════════════════════════════════════
+   Labels / text
+══════════════════════════════════════════ */
+.label {
+    -fx-text-fill: #ffffff;
+}
+
+/* ══════════════════════════════════════════
+   Dialog panes
+══════════════════════════════════════════ */
+.dialog-pane {
+    -fx-background-color: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: #111111;
+    -fx-padding: 10;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1 0 0 0;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #111111;
+    -fx-padding: 12;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 0 0 2 0;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: #ffff00;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════
+   TabPane
+══════════════════════════════════════════ */
+.tab-pane {
+    -fx-background-color: #000000;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #111111;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #000000;
+    -fx-padding: 6 14 6 14;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1;
+    -fx-background-radius: 0;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-weight: bold;
+}
+
+.tab-pane .tab:hover .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #ffff00;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+}
+
+/* ══════════════════════════════════════════
+   TableView
+══════════════════════════════════════════ */
+.table-view {
+    -fx-background-color: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #111111;
+}
+
+.table-view .column-header {
+    -fx-background-color: #111111;
+    -fx-padding: 6 10 6 10;
+    -fx-border-color: transparent #ffffff transparent transparent;
+    -fx-border-width: 0 2 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #ffff00;
+    -fx-font-weight: bold;
+}
+
+.table-view .column-header-background .filler {
+    -fx-background-color: #111111;
+}
+
+.table-view .column-header:last-visible {
+    -fx-border-color: transparent;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: transparent transparent #333333 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #111111;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #333333;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 4 10 4 10;
+    -fx-border-color: transparent;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #000000;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-style: italic;
+}
+
+/* ══════════════════════════════════════════
+   ListView
+══════════════════════════════════════════ */
+.list-view {
+    -fx-background-color: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.list-view .list-cell {
+    -fx-padding: 5 10 5 10;
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: transparent transparent #333333 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.list-view .list-cell:odd {
+    -fx-background-color: #111111;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #333333;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+}
+
+.list-view .placeholder .label {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-style: italic;
+}
+
+/* ══════════════════════════════════════════
+   Separator
+══════════════════════════════════════════ */
+.separator .line {
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+}
+
+/* ══════════════════════════════════════════
+   ScrollPane
+══════════════════════════════════════════ */
+.scroll-pane {
+    -fx-background-color: #000000;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #000000;
+}
+
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: #000000;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #ffff00;
+}
+
+/* ══════════════════════════════════════════
+   DatePicker
+══════════════════════════════════════════ */
+.date-picker .arrow-button {
+    -fx-background-color: #000000;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 0 0 0 2;
+    -fx-padding: 4 8 4 8;
+    -fx-background-radius: 0;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #ffffff;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #ffffff;
+}
+
+.date-picker .arrow-button:hover .arrow {
+    -fx-background-color: #000000;
+}
+
+.date-picker:focused,
+.date-picker .text-field:focused {
+    -fx-border-color: #ffff00;
+}
+
+/* ══════════════════════════════════════════
+   Label cells
+══════════════════════════════════════════ */
+.label-cell {
+    -fx-effect: null;
+}
+
+.label-cell-active {
+    -fx-effect: dropshadow(gaussian, rgba(255,255,0,0.8), 8, 0, 0, 0);
+}
+
+.label-cell-selected {
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 4, 0, 0, 0);
+}
