@@ -75,11 +75,12 @@
 }
 
 .combo-box-popup .list-view .list-cell:hover {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: #eeeeee;
+    -fx-text-fill: #333333;
 }
 
 .combo-box-popup .list-view .list-cell:selected {
-    -fx-background-color: #eeeeee;
+    -fx-background-color: #BDBDBD;
     -fx-text-fill: #333333;
 }
 

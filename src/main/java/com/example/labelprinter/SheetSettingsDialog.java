@@ -2,6 +2,7 @@ package com.example.labelprinter;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
@@ -25,11 +26,17 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         ComboBox<String> themeCombo = new ComboBox<>();
         themeCombo.getItems().addAll("Corporate", "Dark", "Minimal", "Ocean");
         themeCombo.setValue(settings.getTheme());
+        themeCombo.setMaxWidth(Double.MAX_VALUE);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(8);
         grid.setPadding(new Insets(12));
+
+        ColumnConstraints col0 = new ColumnConstraints();
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setHgrow(javafx.scene.layout.Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(col0, col1);
 
         int row = 0;
         grid.add(new Label("Sidbredd (mm)"), 0, row);

@@ -83,6 +83,7 @@
 
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #e8f0fe;
+    -fx-text-fill: black;
 }
 
 .combo-box-popup .list-view .list-cell:selected {
