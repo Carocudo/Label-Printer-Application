@@ -101,7 +101,7 @@ public class MainApp extends Application {
     }
 
     private void loadInitialData() throws IOException {
-        productOptions.setAll(dataStore.loadProducts());
+        productOptions.setAll(sortedProducts(dataStore.loadProducts()));
         versionOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getVersionsFilename())));
         warehouseOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getWarehousesFilename())));
 
@@ -187,7 +187,7 @@ public class MainApp extends Application {
         Button editDataButton = new Button(bundle.getString("main.button.edit"));
         editDataButton.setOnAction(event -> {
             EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, payload -> {
-                productOptions.setAll(payload.products());
+                productOptions.setAll(sortedProducts(payload.products()));
                 versionOptions.setAll(sortedValues(payload.versions()));
                 warehouseOptions.setAll(sortedValues(payload.warehouses()));
                 try {
@@ -289,6 +289,14 @@ public class MainApp extends Application {
                     }
                     return String.CASE_INSENSITIVE_ORDER.compare(a, b);
                 })
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> sortedProducts(List<Product> input) {
+        return input.stream()
+                .filter(p -> p != null)
+                .sorted((a, b) -> String.CASE_INSENSITIVE_ORDER.compare(
+                        a.getCode(), b.getCode()))
                 .collect(Collectors.toList());
     }
 
