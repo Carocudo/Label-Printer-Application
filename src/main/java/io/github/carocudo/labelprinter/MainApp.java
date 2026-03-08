@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainApp extends Application {
     private static final double UI_GRID_GAP = 8;
@@ -40,7 +41,7 @@ public class MainApp extends Application {
 
     private Scene scene;
     private boolean debugPrint = false;
-    private ResourceBundle bundle = ResourceBundle.getBundle(
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
             "io/github/carocudo/labelprinter/messages");
 
     public static void main(String[] args) {
@@ -78,14 +79,11 @@ public class MainApp extends Application {
         scene = new Scene(root, 900, 820);
         applyTheme(settings.getTheme(), scene);
         primaryStage.setTitle(bundle.getString("app.title"));
-        primaryStage.getIcons().addAll(
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon32.png")),
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon64.png")),
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon128.png")),
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon256.png")),
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon512.png")),
-                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon1024.png"))
-        );
+        Stream.of("icon32.png", "icon64.png", "icon128.png", "icon256.png", "icon512.png", "icon1024.png")
+                .map(name -> getClass().getResourceAsStream("/io/github/carocudo/labelprinter/" + name))
+                .filter(Objects::nonNull)
+                .map(Image::new)
+                .forEach(primaryStage.getIcons()::add);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -286,7 +284,7 @@ public class MainApp extends Application {
                     // Extract leading number for numeric sort
                     double numA = extractLeadingNumber(a);
                     double numB = extractLeadingNumber(b);
-                    if (numA != Double.NaN && numB != Double.NaN) {
+                    if (!Double.isNaN(numA) && !Double.isNaN(numB)) {
                         return Double.compare(numA, numB);
                     }
                     return String.CASE_INSENSITIVE_ORDER.compare(a, b);
@@ -565,7 +563,10 @@ public class MainApp extends Application {
             case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
             default -> "/io/github/carocudo/labelprinter/style.css";
         };
-        scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
+        var resource = getClass().getResource(css);
+        if (resource != null) {
+            scene.getStylesheets().add(resource.toExternalForm());
+        }
     }
 
     private void applyThemeToDialog(Dialog<?> dialog) {

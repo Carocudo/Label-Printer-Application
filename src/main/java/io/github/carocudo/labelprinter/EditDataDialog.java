@@ -19,7 +19,7 @@ public class EditDataDialog extends Dialog<Void> {
     private final ObservableList<Product> products;
     private final ObservableList<String> versions;
     private final ObservableList<String> warehouses;
-    private ResourceBundle bundle = ResourceBundle.getBundle(
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
             "io/github/carocudo/labelprinter/messages");
 
     public EditDataDialog(List<Product> products,
