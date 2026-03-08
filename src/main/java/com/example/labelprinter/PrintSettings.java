@@ -13,7 +13,7 @@ public class PrintSettings {
     private double marginLeftMm = LabelSheetConfig.DEFAULT_MARGIN_LEFT_MM;
     private double fontSize = 12;
 
-    private String theme = "corporate";
+    private String theme = "Corporate";
 
     public String getTheme() {
         return theme;
