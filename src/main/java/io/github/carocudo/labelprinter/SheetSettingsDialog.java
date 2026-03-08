@@ -1,15 +1,18 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
-public class SheetSettingsDialog extends Dialog<PrintSettings> {
-    public SheetSettingsDialog(PrintSettings settings) {
-        setTitle("Ark- och etikettinställningar");
+import java.util.ResourceBundle;
 
-        ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
+public class SheetSettingsDialog extends Dialog<PrintSettings> {
+
+    public SheetSettingsDialog(PrintSettings settings, ResourceBundle bundle) {
+        setTitle(bundle.getString("sheetsettings.title"));
+
+        ButtonType saveButton = new ButtonType(bundle.getString("sheetsettings.button.save"), ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
 
         TextField pageWidthField = new TextField(Double.toString(settings.getPageWidthMm()));
@@ -39,29 +42,28 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         grid.getColumnConstraints().addAll(col0, col1);
 
         int row = 0;
-        grid.add(new Label("Sidbredd (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.pagewidth")), 0, row);
         grid.add(pageWidthField, 1, row++);
-        grid.add(new Label("Sidhöjd (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.pageheight")), 0, row);
         grid.add(pageHeightField, 1, row++);
-        grid.add(new Label("Etikettsbredd (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.labelwidth")), 0, row);
         grid.add(labelWidthField, 1, row++);
-        grid.add(new Label("Etikettshöjd (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.labelheight")), 0, row);
         grid.add(labelHeightField, 1, row++);
-        grid.add(new Label("Horisontellt gap (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.gapx")), 0, row);
         grid.add(gapXField, 1, row++);
-        grid.add(new Label("Vertikalt gap (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.gapy")), 0, row);
         grid.add(gapYField, 1, row++);
-        grid.add(new Label("Övre marginal (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.margintop")), 0, row);
         grid.add(marginTopField, 1, row++);
-        grid.add(new Label("Vänster marginal (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.marginleft")), 0, row);
         grid.add(marginLeftField, 1, row++);
-        grid.add(new Label("Textavstånd uppifrån (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.paddingtop")), 0, row);
         grid.add(paddingTopField, 1, row++);
-        grid.add(new Label("Textavstånd från vänster (mm)"), 0, row);
+        grid.add(new Label(bundle.getString("sheetsettings.paddingleft")), 0, row);
         grid.add(paddingLeftField, 1, row++);
-
-        grid.add(new Label("Tema"), 0, row);
-        grid.add(themeCombo, 1, row++);
+        grid.add(new Label(bundle.getString("sheetsettings.theme")), 0, row);
+        grid.add(themeCombo, 1, row);
 
         getDialogPane().setContent(grid);
 

@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.print.PrinterJob;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -16,11 +17,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainApp extends Application {
     private static final double UI_GRID_GAP = 8;
@@ -41,8 +40,9 @@ public class MainApp extends Application {
     private DatePicker datePicker;
 
     private Scene scene;
-
     private boolean debugPrint = false;
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
+            "io/github/carocudo/labelprinter/messages");
 
     public static void main(String[] args) {
         launch(args);
@@ -54,7 +54,7 @@ public class MainApp extends Application {
             dataStore.ensureDataDir();
             loadInitialData();
         } catch (IOException ex) {
-            showError("Datafel", "Det gick inte att läsa in lokal data.", ex.getMessage());
+            showError(bundle.getString("error.title.data"), bundle.getString("error.message.localdata"), ex.getMessage());
         }
 
         BorderPane root = new BorderPane();
@@ -78,7 +78,12 @@ public class MainApp extends Application {
 
         scene = new Scene(root, 900, 820);
         applyTheme(settings.getTheme(), scene);
-        primaryStage.setTitle("Etikettsutskrift");
+        primaryStage.setTitle(bundle.getString("app.title"));
+        Stream.of("icon32.png", "icon64.png", "icon128.png", "icon256.png", "icon512.png", "icon1024.png")
+                .map(name -> getClass().getResourceAsStream("/io/github/carocudo/labelprinter/" + name))
+                .filter(Objects::nonNull)
+                .map(Image::new)
+                .forEach(primaryStage.getIcons()::add);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -90,7 +95,7 @@ public class MainApp extends Application {
                 dataStore.saveSimpleList(dataStore.getWarehousesFilename(), warehouseOptions);
                 dataStore.saveSettings(settings);
             } catch (IOException ex) {
-                showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
+                showError(bundle.getString("error.title.save"), bundle.getString("error.message.localdata"), ex.getMessage());
             }
         });
     }
@@ -117,7 +122,7 @@ public class MainApp extends Application {
         try {
             savedLabels = dataStore.loadLabels(productsByCode);
         } catch (IOException ex) {
-            showError("Datafel", "Det gick inte att läsa in sparade etiketter.", ex.getMessage());
+            showError(bundle.getString("error.title.data"), bundle.getString("error.message.readlabels"), ex.getMessage());
         }
 
         for (int row = 0; row < LabelSheetConfig.ROWS; row++) {
@@ -151,22 +156,22 @@ public class MainApp extends Application {
 
     private VBox buildControls() {
         productCombo = new ComboBox<>(productOptions);
-        productCombo.setPromptText("Papperskvalitet");
+        productCombo.setPromptText(bundle.getString("main.label.product"));
         productCombo.setMaxWidth(Double.MAX_VALUE);
         productCombo.setVisibleRowCount(5);
 
         versionCombo = new ComboBox<>(versionOptions);
-        versionCombo.setPromptText("Ytvikt");
+        versionCombo.setPromptText(bundle.getString("main.label.version"));
         versionCombo.setMaxWidth(Double.MAX_VALUE);
         versionCombo.setVisibleRowCount(5);
 
         warehouseCombo = new ComboBox<>(warehouseOptions);
-        warehouseCombo.setPromptText("Fabrik");
+        warehouseCombo.setPromptText(bundle.getString("main.label.warehouse"));
         warehouseCombo.setMaxWidth(Double.MAX_VALUE);
         warehouseCombo.setVisibleRowCount(5);
 
         datePicker = new DatePicker();
-        datePicker.setPromptText("Datum");
+        datePicker.setPromptText(bundle.getString("main.label.date"));
         datePicker.setMaxWidth(Double.MAX_VALUE);
         datePicker.prefHeightProperty().bind(productCombo.heightProperty());
 
@@ -179,7 +184,7 @@ public class MainApp extends Application {
         datePicker.setOnAction(event -> updateActiveLabelData(productCombo.getValue(),
                 versionCombo.getValue(), warehouseCombo.getValue(), datePicker.getValue()));
 
-        Button editDataButton = new Button("Redigera papperskvalitet & ytvikt");
+        Button editDataButton = new Button(bundle.getString("main.button.edit"));
         editDataButton.setOnAction(event -> {
             EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, payload -> {
                 productOptions.setAll(payload.products());
@@ -190,7 +195,7 @@ public class MainApp extends Application {
                     dataStore.saveSimpleList(dataStore.getVersionsFilename(), versionOptions);
                     dataStore.saveSimpleList(dataStore.getWarehousesFilename(), warehouseOptions);
                 } catch (IOException ex) {
-                    showError("Sparfel", "Det gick inte att spara produktlistor.", ex.getMessage());
+                    showError(bundle.getString("error.title.save"), bundle.getString("error.message.saveproducts"), ex.getMessage());
                 }
                 reconcileProducts();
                 refreshActiveControls();
@@ -199,9 +204,9 @@ public class MainApp extends Application {
             dialog.showAndWait();
         });
 
-        Button editFontButton = new Button("Redigera teckenstil");
+        Button editFontButton = new Button(bundle.getString("main.button.editfont"));
         editFontButton.setOnAction(event -> {
-            FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize());
+            FontSettingsDialog dialog = new FontSettingsDialog(settings.getFontSize(), bundle);
             applyThemeToDialog(dialog);
             Optional<Double> result = dialog.showAndWait();
             result.ifPresent(size -> {
@@ -210,14 +215,14 @@ public class MainApp extends Application {
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
-                    showError("Sparfel", "Det gick inte att spara teckenstorlek.", ex.getMessage());
+                    showError(bundle.getString("error.title.save"), bundle.getString("error.message.savefont"), ex.getMessage());
                 }
             });
         });
 
-        Button sheetSettingsButton = new Button("Arkinställningar");
+        Button sheetSettingsButton = new Button(bundle.getString("main.button.sheetsettings"));
         sheetSettingsButton.setOnAction(event -> {
-            SheetSettingsDialog dialog = new SheetSettingsDialog(settings);
+            SheetSettingsDialog dialog = new SheetSettingsDialog(settings, bundle);
             applyThemeToDialog(dialog);
             Optional<PrintSettings> result = dialog.showAndWait();
             result.ifPresent(updated -> {
@@ -227,12 +232,12 @@ public class MainApp extends Application {
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
-                    showError("Sparfel", "Det gick inte att spara arkinställningar.", ex.getMessage());
+                    showError(bundle.getString("error.title.save"), bundle.getString("error.message.savepage"), ex.getMessage());
                 }
             });
         });
 
-        Button clearButton = new Button("Rensa etikett");
+        Button clearButton = new Button(bundle.getString("main.button.clear"));
         clearButton.setOnAction(event -> clearActiveLabel());
         clearButton.getStyleClass().add("button-danger");
 
@@ -248,7 +253,7 @@ public class MainApp extends Application {
             debugPrintButton.setText(debugPrint ? "Debug ON" : "Debug OFF");
         });
 
-        Button printButton = new Button("Skriv ut");
+        Button printButton = new Button(bundle.getString("main.button.print"));
         printButton.setOnAction(event -> handlePrint());
 
         HBox row1 = new HBox(10, productCombo, versionCombo, warehouseCombo, datePicker);
@@ -279,7 +284,7 @@ public class MainApp extends Application {
                     // Extract leading number for numeric sort
                     double numA = extractLeadingNumber(a);
                     double numB = extractLeadingNumber(b);
-                    if (numA != Double.NaN && numB != Double.NaN) {
+                    if (!Double.isNaN(numA) && !Double.isNaN(numB)) {
                         return Double.compare(numA, numB);
                     }
                     return String.CASE_INSENSITIVE_ORDER.compare(a, b);
@@ -322,7 +327,7 @@ public class MainApp extends Application {
             try {
                 dataStore.saveLabels(labelCells);
             } catch (IOException ex) {
-                showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
+                showError(bundle.getString("error.title.save"), bundle.getString("error.message.savelabels"), ex.getMessage());
             }
             return;
         }
@@ -339,7 +344,7 @@ public class MainApp extends Application {
         try {
             dataStore.saveLabels(labelCells);
         } catch (IOException ex) {
-            showError("Sparfel", "Det gick inte att spara etikettdata.", ex.getMessage());
+            showError(bundle.getString("error.title.save"), bundle.getString("error.message.savelabels"), ex.getMessage());
         }
     }
 
@@ -423,13 +428,13 @@ public class MainApp extends Application {
     private void handlePrint() {
         boolean hasSelection = labelCells.stream().anyMatch(LabelCell::isSelected);
         if (!hasSelection) {
-            showAlert("Inget att skriva ut", "Välj minst en etikett att skriva ut.");
+            showAlert(bundle.getString("alert.print.nothing.title"), bundle.getString("alert.print.nothing.body"));
             return;
         }
 
         PrinterJob job = PrinterJob.createPrinterJob();
         if (job == null) {
-            showAlert("Skrivare ej tillgänglig", "Kunde inte skapa utskriftsjobb.");
+            showAlert(bundle.getString("alert.print.noprinter.title"), bundle.getString("alert.print.noprinter.body"));
             return;
         }
         boolean proceed = job.showPrintDialog(null);
@@ -442,7 +447,7 @@ public class MainApp extends Application {
         if (success) {
             job.endJob();
         } else {
-            showAlert("Utskrift misslyckades", "Utskriftsjobbet slutfördes inte.");
+            showAlert(bundle.getString("alert.print.failed.title"), bundle.getString("alert.print.failed.body"));
         }
     }
 
@@ -553,12 +558,15 @@ public class MainApp extends Application {
     private void applyTheme(String theme, Scene scene) {
         scene.getStylesheets().clear();
         String css = switch (theme) {
-            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
-            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
-            default -> "/com/example/labelprinter/style.css";
+            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
+            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
+            default -> "/io/github/carocudo/labelprinter/style.css";
         };
-        scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
+        var resource = getClass().getResource(css);
+        if (resource != null) {
+            scene.getStylesheets().add(resource.toExternalForm());
+        }
     }
 
     private void applyThemeToDialog(Dialog<?> dialog) {
@@ -569,10 +577,10 @@ public class MainApp extends Application {
 
     private String getThemePath(String theme) {
         return switch (theme) {
-            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
-            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
-            default -> "/com/example/labelprinter/style.css";
+            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
+            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
+            default -> "/io/github/carocudo/labelprinter/style.css";
         };
     }
 }

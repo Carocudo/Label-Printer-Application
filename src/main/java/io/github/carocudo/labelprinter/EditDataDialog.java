@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,12 +12,15 @@ import javafx.stage.Modality;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class EditDataDialog extends Dialog<Void> {
     private final ObservableList<Product> products;
     private final ObservableList<String> versions;
     private final ObservableList<String> warehouses;
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
+            "io/github/carocudo/labelprinter/messages");
 
     public EditDataDialog(List<Product> products,
                           List<String> versions,
@@ -27,16 +30,16 @@ public class EditDataDialog extends Dialog<Void> {
         this.versions = FXCollections.observableArrayList(versions);
         this.warehouses = FXCollections.observableArrayList(warehouses);
 
-        setTitle("Redigera kvaliteter & ytvikter");
+        setTitle(bundle.getString("editdata.title"));
 
         initModality(Modality.APPLICATION_MODAL);
 
-        ButtonType saveButtonType = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = new ButtonType(bundle.getString("editdata.button.save"), ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
         TabPane tabPane = new TabPane();
-        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab("Ytvikter", this.versions, true),
-                createSimpleListTab("Fabriker", this.warehouses, false));
+        tabPane.getTabs().addAll(createProductsTab(), createSimpleListTab(bundle.getString("editdata.tab.versions"), this.versions, true),
+                createSimpleListTab(bundle.getString("editdata.tab.warehouses"), this.warehouses, false));
 
         getDialogPane().setContent(tabPane);
         getDialogPane().setPrefSize(750, 500); // was 700x420
@@ -67,13 +70,13 @@ public class EditDataDialog extends Dialog<Void> {
         });
 
         TextField codeField = new TextField();
-        codeField.setPromptText("Kod");
+        codeField.setPromptText(bundle.getString("editdata.label.code"));
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Namn");
+        nameField.setPromptText(bundle.getString("editdata.label.name"));
         HBox.setHgrow(nameField, Priority.ALWAYS);
 
-        Button addButton = new Button("Lägg till");
+        Button addButton = new Button(bundle.getString("editdata.button.add"));
         addButton.setOnAction(event -> {
             String code = codeField.getText().trim();
             String name = nameField.getText().trim();
@@ -85,7 +88,7 @@ public class EditDataDialog extends Dialog<Void> {
             }
         });
 
-        Button removeButton = new Button("Ta bort");
+        Button removeButton = new Button(bundle.getString("editdata.button.remove"));
         removeButton.getStyleClass().add("button-danger");
         removeButton.setOnAction(event -> {
             Product selected = listView.getSelectionModel().getSelectedItem();
@@ -99,13 +102,13 @@ public class EditDataDialog extends Dialog<Void> {
         codeField.setOnAction(event -> nameField.requestFocus()); // Tab through with Enter
 
         HBox inputRow = new HBox(8, codeField, nameField, addButton, removeButton);
-        listView.setPlaceholder(new javafx.scene.control.Label("Inga produkter tillagda"));
+        listView.setPlaceholder(new javafx.scene.control.Label(bundle.getString("editdata.placeholder.products")));
 
         VBox layout = new VBox(10, listView, inputRow);
         layout.setPadding(new Insets(10));
         VBox.setVgrow(listView, Priority.ALWAYS);
 
-        Tab tab = new Tab("Papperskvaliteter", layout);
+        Tab tab = new Tab(bundle.getString("editdata.tab.products"), layout);
         tab.setClosable(false);
         return tab;
     }
@@ -116,15 +119,15 @@ public class EditDataDialog extends Dialog<Void> {
         listView.setCellFactory(TextFieldListCell.forListView());
 
         TextField inputField = new TextField();
-        inputField.setPromptText("Lägg till ny " + title.toLowerCase());
-        Button addButton = new Button("Lägg till");
+        inputField.setPromptText(bundle.getString("editdata.field.add") + title.toLowerCase());
+        Button addButton = new Button(bundle.getString("editdata.button.add"));
         addButton.setOnAction(event -> {
             if (!inputField.getText().isBlank()) {
                 list.add(inputField.getText().trim());
                 inputField.clear();
             }
         });
-        Button removeButton = new Button("Ta bort");
+        Button removeButton = new Button(bundle.getString("editdata.button.remove"));
         removeButton.getStyleClass().add("button-danger");
         removeButton.setOnAction(event -> {
             String selected = listView.getSelectionModel().getSelectedItem();
@@ -151,6 +154,8 @@ public class EditDataDialog extends Dialog<Void> {
             inputRow = new HBox(8, inputField, addButton, removeButton);
         }
         HBox.setHgrow(inputField, Priority.ALWAYS);
+
+        listView.setPlaceholder(new javafx.scene.control.Label(bundle.getString("editdata.placeholder.data")));
 
         VBox layout = new VBox(10, listView, inputRow);
         layout.setPadding(new Insets(10));

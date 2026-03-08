@@ -1,14 +1,17 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-public class FontSettingsDialog extends Dialog<Double> {
-    public FontSettingsDialog(double currentSize) {
-        setTitle("Redigera teckenstil ");
+import java.util.ResourceBundle;
 
-        ButtonType saveButton = new ButtonType("Spara", ButtonBar.ButtonData.OK_DONE);
+public class FontSettingsDialog extends Dialog<Double> {
+
+    public FontSettingsDialog(double currentSize, ResourceBundle bundle) {
+        setTitle(bundle.getString("fontsettings.title"));
+
+        ButtonType saveButton = new ButtonType(bundle.getString("fontsettings.button.save"), ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
 
         Slider sizeSlider = new Slider(8, 24, currentSize);
@@ -18,7 +21,7 @@ public class FontSettingsDialog extends Dialog<Double> {
         sizeSlider.setMinorTickCount(3);
 
         Label sizeLabel = new Label();
-        sizeLabel.textProperty().bind(sizeSlider.valueProperty().asString("Teckenstorlek: %.0f"));
+        sizeLabel.textProperty().bind(sizeSlider.valueProperty().asString(bundle.getString("fontsettings.label.fontsize") + "%.0f"));
 
         VBox layout = new VBox(10, sizeLabel, sizeSlider);
         layout.setPadding(new Insets(12));

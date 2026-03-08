@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -150,7 +150,7 @@ public class DataStore {
             properties.load(input);
         }
 
-        settings.setTheme(properties.getProperty("theme", "corporate"));
+        settings.setTheme(properties.getProperty("theme", "Corporate"));
 
         settings.setFontSize(parseDouble(properties.getProperty("fontSize"), settings.getFontSize()));
         settings.setPageWidthMm(parseDouble(properties.getProperty("pageWidthMm"), settings.getPageWidthMm()));
