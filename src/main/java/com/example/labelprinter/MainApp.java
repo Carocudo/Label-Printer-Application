@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.print.PrinterJob;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -77,6 +78,14 @@ public class MainApp extends Application {
         scene = new Scene(root, 900, 820);
         applyTheme(settings.getTheme(), scene);
         primaryStage.setTitle(bundle.getString("app.title"));
+        primaryStage.getIcons().addAll(
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon32.png")),
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon64.png")),
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon128.png")),
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon256.png")),
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon512.png")),
+                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon1024.png"))
+        );
         primaryStage.setScene(scene);
         primaryStage.show();
 
