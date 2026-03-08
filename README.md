@@ -1,28 +1,34 @@
 # Label Printer Application
 
-A JavaFX desktop application for managing and printing product labels on fixed-size sheets. Built for internal use in factory environment.
+A JavaFX desktop application for managing and printing product labels on fixed-size sheets. Built for internal use in a factory environment.
 
 ---
 
 ## Features
 
-- Fill label sheets with product, weight (g/m²), factory and date information
+- Fill label sheets with paper quality, grammage (g/m²), factory and date information
 - Click any label cell to select and edit it
+- Double-click to edit existing entries in all data lists
 - Configurable label sheet layout (size, margins, gaps)
 - Adjustable font size
+- 4 UI themes: Corporate, Dark, Minimal, Ocean
+- Swedish and English UI — automatically matches OS language
 - Saves all data locally between sessions
 - Prints directly to any installed printer
-- Full Swedish UI
+- Portable ZIP version available — no installation needed
 
 ---
 
 ## Download & Install
 
-Go to the [Releases](../../releases) page and download the latest `Label-Printer-*.exe` installer.
+Go to the [Releases](../../releases) page and download the latest version:
 
-- Installs to Program Files
-- Adds a Start Menu entry and Desktop shortcut
-- No Java installation required — runtime is bundled
+| File | Description |
+|---|---|
+| `Label-Printer-*.exe` | Windows installer — installs to Program Files with Start Menu and Desktop shortcut |
+| `Label-Printer-app-image-*.zip` | Portable version — unzip and run, no installation needed |
+
+No Java installation required — runtime is bundled in both versions.
 
 > **Note:** Windows may show a SmartScreen warning on first launch since the app is not code-signed. Click **"More info" → "Run anyway"** to proceed. If your IT department has blocked unknown apps entirely, ask them to whitelist the installer.
 
@@ -35,55 +41,25 @@ All data is stored locally in a `data/` folder next to the application:
 | File | Contents |
 |---|---|
 | `Papperskvalitet.csv` | Product list (code + name) |
-| `Ytvikt.txt` | Weight options (g/m²) |
+| `Ytvikt.txt` | Grammage options (g/m²) |
 | `Fabrik.txt` | Factory/warehouse list |
 | `etiketter.csv` | Saved label sheet state |
-| `config.properties` | Sheet layout & font settings |
+| `config.properties` | Sheet layout, font and theme settings |
 
 ---
 
-## Building from Source
+## Releasing a New Version
 
-### Requirements
-- JDK 17+
-- Maven 3.8+
-
-### Run locally
-```bash
-mvn clean javafx:run
-```
-
-### Build fat JAR
-```bash
-mvn clean package
-```
-
-### Build EXE installer
-Requires [WiX Toolset](https://wixtoolset.org) installed.
-
-```bash
-jpackage ^
-  --input target/ ^
-  --name "Label Printer" ^
-  --main-jar label-printer-1.0-SNAPSHOT.jar ^
-  --main-class Launcher ^
-  --type exe ^
-  --java-options "-Dfile.encoding=UTF-8" ^
-  --win-shortcut ^
-  --win-menu ^
-  --vendor "Your Company Name" ^
-  --dest output/
-```
-
-### Automated builds
-The project uses GitHub Actions to automatically build and publish an EXE installer when a version tag is pushed:
+The project uses GitHub Actions to automatically build and publish installers when a version tag is pushed:
 
 ```bash
 git tag v1.0
 git push origin v1.0
 ```
 
-The resulting installer will appear under [Releases](../../releases) automatically.
+Or trigger a build manually from the **Actions** tab on GitHub — click **"Run workflow"** and enter a version number.
+
+The resulting installer and portable ZIP will appear under [Releases](../../releases) automatically.
 
 ---
 
@@ -92,4 +68,10 @@ The resulting installer will appear under [Releases](../../releases) automatical
 Built with:
 - Java 17
 - JavaFX 17
-- Maven (maven-shade-plugin for fat JAR)
+- Maven (maven-shade-plugin for fat JAR, jpackage for EXE)
+- JNA 5.13 (Windows title bar theming)
+
+To run locally:
+```bash
+mvn clean javafx:run
+```

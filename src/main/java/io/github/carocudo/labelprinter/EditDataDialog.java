@@ -69,6 +69,7 @@ public class EditDataDialog extends Dialog<Void> {
             }
         });
 
+
         TextField codeField = new TextField();
         codeField.setPromptText(bundle.getString("editdata.label.code"));
 
@@ -94,6 +95,18 @@ public class EditDataDialog extends Dialog<Void> {
             Product selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 products.remove(selected);
+            }
+        });
+
+        listView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Product selected = listView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    codeField.setText(selected.getCode());
+                    nameField.setText(selected.getName());
+                    products.remove(selected);
+                    codeField.requestFocus();
+                }
             }
         });
 
