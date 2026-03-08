@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 public final class LabelSheetConfig {
     public static final int COLUMNS = 2;

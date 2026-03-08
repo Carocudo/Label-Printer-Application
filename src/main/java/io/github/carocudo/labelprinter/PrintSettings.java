@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 public class PrintSettings {
     private double pageWidthMm = LabelSheetConfig.DEFAULT_PAGE_WIDTH_MM;

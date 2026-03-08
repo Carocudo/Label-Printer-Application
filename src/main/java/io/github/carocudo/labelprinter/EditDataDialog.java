@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +20,7 @@ public class EditDataDialog extends Dialog<Void> {
     private final ObservableList<String> versions;
     private final ObservableList<String> warehouses;
     private ResourceBundle bundle = ResourceBundle.getBundle(
-            "com/example/labelprinter/messages");
+            "io/github/carocudo/labelprinter/messages");
 
     public EditDataDialog(List<Product> products,
                           List<String> versions,

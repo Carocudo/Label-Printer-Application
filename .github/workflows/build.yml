@@ -54,7 +54,7 @@ jobs:
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
             --main-class Launcher `
             --type exe `
-            --icon src/main/resources/com/example/labelprinter/icon.ico `
+            --icon src/main/resources/io/github/carocudo/labelprinter/icon.ico `
             --java-options "-Dfile.encoding=UTF-8" `
             --win-shortcut `
             --win-menu `
@@ -73,7 +73,7 @@ jobs:
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
             --main-class Launcher `
             --type app-image `
-            --icon src/main/resources/com/example/labelprinter/icon.ico `
+            --icon src/main/resources/io/github/carocudo/labelprinter/icon.ico `
             --java-options "-Dfile.encoding=UTF-8" `
             --app-version ${{ steps.version.outputs.version }} `
             --vendor "Carocudo Inc." `

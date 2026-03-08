@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;

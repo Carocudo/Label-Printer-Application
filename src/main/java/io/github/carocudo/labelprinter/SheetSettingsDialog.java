@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -63,7 +63,7 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         grid.add(new Label(bundle.getString("sheetsettings.paddingleft")), 0, row);
         grid.add(paddingLeftField, 1, row++);
         grid.add(new Label(bundle.getString("sheetsettings.theme")), 0, row);
-        grid.add(themeCombo, 1, row++);
+        grid.add(themeCombo, 1, row);
 
         getDialogPane().setContent(grid);
 

@@ -1,4 +1,4 @@
-package com.example.labelprinter;
+package io.github.carocudo.labelprinter;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -41,7 +41,7 @@ public class MainApp extends Application {
     private Scene scene;
     private boolean debugPrint = false;
     private ResourceBundle bundle = ResourceBundle.getBundle(
-            "com/example/labelprinter/messages");
+            "io/github/carocudo/labelprinter/messages");
 
     public static void main(String[] args) {
         launch(args);
@@ -79,12 +79,12 @@ public class MainApp extends Application {
         applyTheme(settings.getTheme(), scene);
         primaryStage.setTitle(bundle.getString("app.title"));
         primaryStage.getIcons().addAll(
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon32.png")),
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon64.png")),
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon128.png")),
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon256.png")),
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon512.png")),
-                new Image(getClass().getResourceAsStream("/com/example/labelprinter/icon1024.png"))
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon32.png")),
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon64.png")),
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon128.png")),
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon256.png")),
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon512.png")),
+                new Image(getClass().getResourceAsStream("/io/github/carocudo/labelprinter/icon1024.png"))
         );
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -560,10 +560,10 @@ public class MainApp extends Application {
     private void applyTheme(String theme, Scene scene) {
         scene.getStylesheets().clear();
         String css = switch (theme) {
-            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
-            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
-            default -> "/com/example/labelprinter/style.css";
+            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
+            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
+            default -> "/io/github/carocudo/labelprinter/style.css";
         };
         scene.getStylesheets().add(getClass().getResource(css).toExternalForm());
     }
@@ -576,10 +576,10 @@ public class MainApp extends Application {
 
     private String getThemePath(String theme) {
         return switch (theme) {
-            case "Dark" -> "/com/example/labelprinter/theme-dark.css";
-            case "Minimal" -> "/com/example/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/com/example/labelprinter/theme-ocean.css";
-            default -> "/com/example/labelprinter/style.css";
+            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
+            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
+            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
+            default -> "/io/github/carocudo/labelprinter/style.css";
         };
     }
 }
