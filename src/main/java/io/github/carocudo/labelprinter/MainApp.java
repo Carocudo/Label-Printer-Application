@@ -29,7 +29,8 @@ public class MainApp extends Application {
     private final ObservableList<String> versionOptions = FXCollections.observableArrayList();
     private final ObservableList<String> warehouseOptions = FXCollections.observableArrayList();
     private final List<LabelCell> labelCells = new java.util.ArrayList<>();
-
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
+            "io/github/carocudo/labelprinter/messages");
     private LabelCell activeCell;
     private boolean updatingControls;
     private PrintSettings settings = new PrintSettings();
@@ -38,11 +39,8 @@ public class MainApp extends Application {
     private ComboBox<String> versionCombo;
     private ComboBox<String> warehouseCombo;
     private DatePicker datePicker;
-
     private Scene scene;
     private boolean debugPrint = false;
-    private final ResourceBundle bundle = ResourceBundle.getBundle(
-            "io/github/carocudo/labelprinter/messages");
 
     public static void main(String[] args) {
         launch(args);
@@ -241,6 +239,26 @@ public class MainApp extends Application {
         clearButton.setOnAction(event -> clearActiveLabel());
         clearButton.getStyleClass().add("button-danger");
 
+        Button clearAllButton = new Button(bundle.getString("main.button.clearall"));
+        clearAllButton.setOnAction(event -> {
+            updatingControls = true;
+            productCombo.setValue(null);
+            versionCombo.setValue(null);
+            warehouseCombo.setValue(null);
+            datePicker.setValue(null);
+            updatingControls = false;
+            labelCells.forEach(cell -> {
+                cell.setData(null);
+                cell.refresh();
+            });
+            try {
+                dataStore.saveLabels(labelCells);
+            } catch (IOException ex) {
+                showError(bundle.getString("error.title.save"), bundle.getString("error.message.savelabels"), ex.getMessage());
+            }
+        });
+        clearAllButton.getStyleClass().add("button-danger");
+
 //        Button debugButton = new Button("Debug borders");
 //        debugButton.setOnAction(e ->
 //                labelCells.forEach(c -> c.setDebugBorders(true))
@@ -267,8 +285,12 @@ public class MainApp extends Application {
 
 //        Debug button is removed from UI but left here for easy testing of print layout during development
 //        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, spacer, debugPrintButton, printButton);
-        HBox row2 = new HBox(10, editDataButton, editFontButton, sheetSettingsButton, clearButton, spacer, printButton);
-        row2.setAlignment(Pos.CENTER_LEFT);
+        // Settings group
+        HBox settingsGroup = new HBox(6, editDataButton, editFontButton, sheetSettingsButton);
+        // Destructive group
+        HBox clearGroup = new HBox(6, clearButton, clearAllButton);
+        // Full row
+        HBox row2 = new HBox(16, settingsGroup, clearGroup, spacer, printButton);
 
         VBox container = new VBox(12, new Separator(), row1, row2);
         container.setPadding(new Insets(12, 0, 0, 0));
