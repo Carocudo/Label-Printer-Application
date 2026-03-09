@@ -31,6 +31,11 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         themeCombo.setValue(settings.getTheme());
         themeCombo.setMaxWidth(Double.MAX_VALUE);
 
+        ComboBox<String> languageCombo = new ComboBox<>();
+        languageCombo.getItems().addAll("English", "Svenska");
+        languageCombo.setValue(settings.getLanguage().equals("sv") ? "Svenska" : "English");
+        languageCombo.setMaxWidth(Double.MAX_VALUE);
+
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(8);
@@ -62,8 +67,11 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         grid.add(paddingTopField, 1, row++);
         grid.add(new Label(bundle.getString("sheetsettings.paddingleft")), 0, row);
         grid.add(paddingLeftField, 1, row++);
+        grid.add(new Label(bundle.getString("sheetsettings.language")), 0, row);
+        grid.add(languageCombo, 1, row++);
         grid.add(new Label(bundle.getString("sheetsettings.theme")), 0, row);
         grid.add(themeCombo, 1, row);
+
 
         getDialogPane().setContent(grid);
 
@@ -83,6 +91,7 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
             updated.setMarginLeftMm(parseNonNegativeValue(marginLeftField.getText(), settings.getMarginLeftMm()));
             updated.setPaddingTopMm(parseNonNegativeValue(paddingTopField.getText(), settings.getPaddingTopMm()));
             updated.setPaddingLeftMm(parseNonNegativeValue(paddingLeftField.getText(), settings.getPaddingLeftMm()));
+            updated.setLanguage(languageCombo.getValue().equals("Svenska") ? "sv" : "en");
             updated.setTheme(themeCombo.getValue());
             return updated;
         });
