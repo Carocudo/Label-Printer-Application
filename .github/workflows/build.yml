@@ -65,7 +65,7 @@ jobs:
             --compress=2 `
             --strip-debug `
             --module-path "$env:JAVA_HOME\jmods;$jmodsPath" `
-            --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics,javafx.print `
+            --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics `
             --output runtime-minimal
 
       - name: Build EXE installer with jpackage
