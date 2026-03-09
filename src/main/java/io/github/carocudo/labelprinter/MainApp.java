@@ -29,7 +29,7 @@ public class MainApp extends Application {
     private final ObservableList<String> versionOptions = FXCollections.observableArrayList();
     private final ObservableList<String> warehouseOptions = FXCollections.observableArrayList();
     private final List<LabelCell> labelCells = new java.util.ArrayList<>();
-    private final ResourceBundle bundle = ResourceBundle.getBundle(
+    private  ResourceBundle bundle = ResourceBundle.getBundle(
             "io/github/carocudo/labelprinter/messages");
     private LabelCell activeCell;
     private boolean updatingControls;
@@ -76,6 +76,7 @@ public class MainApp extends Application {
 
         scene = new Scene(root, 900, 820);
         applyTheme(settings.getTheme(), scene);
+//        applyLanguage(settings.getLanguage());
         primaryStage.setTitle(bundle.getString("app.title"));
         Stream.of("icon32.png", "icon64.png", "icon128.png", "icon256.png", "icon512.png", "icon1024.png")
                 .map(name -> getClass().getResourceAsStream("/io/github/carocudo/labelprinter/" + name))
@@ -99,11 +100,15 @@ public class MainApp extends Application {
     }
 
     private void loadInitialData() throws IOException {
+        settings = dataStore.loadSettings();
+        Locale locale = settings.getLanguage().equals("sv")
+                ? new Locale("sv") : Locale.ENGLISH;
+        bundle = ResourceBundle.getBundle(
+                "io/github/carocudo/labelprinter/messages", locale);
+
         productOptions.setAll(sortedProducts(dataStore.loadProducts()));
         versionOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getVersionsFilename())));
         warehouseOptions.setAll(sortedValues(dataStore.loadSimpleList(dataStore.getWarehousesFilename())));
-
-        settings = dataStore.loadSettings();
     }
 
     private GridPane buildLabelGrid() {
@@ -224,9 +229,17 @@ public class MainApp extends Application {
             applyThemeToDialog(dialog);
             Optional<PrintSettings> result = dialog.showAndWait();
             result.ifPresent(updated -> {
+                boolean languageChanged = !updated.getLanguage().equals(settings.getLanguage());
                 settings = updated;
                 applySettingsToCells();
                 applyTheme(settings.getTheme(), scene);
+                if (languageChanged) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(bundle.getString("sheetsettings.language.restart.title"));
+                    alert.setHeaderText(null);
+                    alert.setContentText(bundle.getString("sheetsettings.language.restart.body"));
+                    alert.showAndWait();
+                }
                 try {
                     dataStore.saveSettings(settings);
                 } catch (IOException ex) {
@@ -613,4 +626,11 @@ public class MainApp extends Application {
             default -> "/io/github/carocudo/labelprinter/style.css";
         };
     }
+
+//    private void applyLanguage(String language) {
+//        Locale locale = language.equals("sv") ? new Locale("sv") : Locale.ENGLISH;
+//        ResourceBundle.clearCache();
+//        bundle = ResourceBundle.getBundle(
+//                "io/github/carocudo/labelprinter/messages", locale);
+//    }
 }

@@ -151,6 +151,7 @@ public class DataStore {
         }
 
         settings.setTheme(properties.getProperty("theme", "Corporate"));
+        settings.setLanguage(properties.getProperty("language", "en"));
 
         settings.setFontSize(parseDouble(properties.getProperty("fontSize"), settings.getFontSize()));
         settings.setPageWidthMm(parseDouble(properties.getProperty("pageWidthMm"), settings.getPageWidthMm()));
@@ -173,6 +174,7 @@ public class DataStore {
         Properties properties = new Properties();
 
         properties.setProperty("theme", settings.getTheme());
+        properties.setProperty("language", settings.getLanguage());
 
         properties.setProperty("fontSize", Double.toString(settings.getFontSize()));
         properties.setProperty("pageWidthMm", Double.toString(settings.getPageWidthMm()));

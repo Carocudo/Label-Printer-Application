@@ -15,6 +15,11 @@ public class PrintSettings {
 
     private String theme = "Corporate";
 
+    private String language = "en";  // default
+    // + getter/setter
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+
     public String getTheme() {
         return theme;
     }
