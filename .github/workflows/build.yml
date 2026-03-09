@@ -45,11 +45,23 @@ jobs:
       - name: Refresh PATH after WiX install
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
 
+      - name: Create minimal runtime with jlink
+        shell: pwsh
+        run: |
+          jlink `
+            --no-header-files `
+            --no-man-pages `
+            --compress=2 `
+            --strip-debug `
+            --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics,javafx.print `
+            --output runtime-minimal
+
       - name: Build EXE installer with jpackage
         shell: pwsh
         run: |
           jpackage `
             --input target/ `
+            --runtime-image runtime-minimal `
             --name "Label Printer" `
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
             --main-class Launcher `
@@ -69,6 +81,7 @@ jobs:
         run: |
           jpackage `
             --input target/ `
+            --runtime-image runtime-minimal `
             --name "Label Printer" `
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
             --main-class Launcher `
