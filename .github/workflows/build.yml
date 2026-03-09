@@ -56,12 +56,15 @@ jobs:
         shell: pwsh
         run: |
           $jmodsPath = (Get-ChildItem -Path "javafx-jmods" -Recurse -Filter "javafx.base.jmod" | Select-Object -First 1).DirectoryName
+          Write-Host "jmods path: $jmodsPath"
+          Write-Host "JDK jmods: $env:JAVA_HOME\jmods"
+          Get-ChildItem -Path "javafx-jmods" -Recurse -Filter "*.jmod" | Select-Object Name
           jlink `
             --no-header-files `
             --no-man-pages `
             --compress=2 `
             --strip-debug `
-            --module-path "$jmodsPath" `
+            --module-path "$env:JAVA_HOME\jmods;$jmodsPath" `
             --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics,javafx.print `
             --output runtime-minimal
 
