@@ -45,14 +45,23 @@ jobs:
       - name: Refresh PATH after WiX install
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
 
+      - name: Download JavaFX jmods
+        shell: pwsh
+        run: |
+          $url = "https://download2.gluonhq.com/openjfx/17.0.2/openjfx-17.0.2_windows-x64_bin-jmods.zip"
+          Invoke-WebRequest -Uri $url -OutFile "javafx-jmods.zip"
+          Expand-Archive -Path "javafx-jmods.zip" -DestinationPath "javafx-jmods"
+
       - name: Create minimal runtime with jlink
         shell: pwsh
         run: |
+          $jmodsPath = (Get-ChildItem -Path "javafx-jmods" -Recurse -Filter "javafx.base.jmod" | Select-Object -First 1).DirectoryName
           jlink `
             --no-header-files `
             --no-man-pages `
             --compress=2 `
             --strip-debug `
+            --module-path "$jmodsPath" `
             --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics,javafx.print `
             --output runtime-minimal
 
