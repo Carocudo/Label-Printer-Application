@@ -64,9 +64,31 @@ jobs:
             --no-man-pages `
             --compress=2 `
             --strip-debug `
+            --strip-native-commands `
             --module-path "$env:JAVA_HOME\jmods;$jmodsPath" `
             --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics `
             --output runtime-minimal
+
+      - name: Strip and consolidate runtime
+        shell: pwsh
+        run: |
+          
+          $legalPath = "runtime-minimal\legal"
+          $outputFile = "runtime-minimal\LICENSES.txt"
+
+          Get-ChildItem -Path $legalPath -Recurse -File | Sort-Object FullName | ForEach-Object {
+           Add-Content -Path $outputFile -Value "=== $($_.FullName.Replace((Resolve-Path $legalPath).Path, '')) ==="
+           Add-Content -Path $outputFile -Value (Get-Content $_.FullName -Raw)
+           Add-Content -Path $outputFile -Value "`n"
+          }
+          
+          Remove-Item $legalPath -Recurse -Force
+          
+          Remove-Item "runtime-minimal\conf\security\policy" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "runtime-minimal\conf\security\java.policy" -Force -ErrorAction SilentlyContinue
+          
+          Remove-Item "runtime-minimal\bin\jrunscript.exe" -Force -ErrorAction SilentlyContinue
+          Remove-Item "runtime-minimal\bin\keytool.exe" -Force -ErrorAction SilentlyContinue
 
       - name: Prepare jpackage input
         shell: pwsh
