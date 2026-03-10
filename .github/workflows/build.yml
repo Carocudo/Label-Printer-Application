@@ -68,11 +68,17 @@ jobs:
             --add-modules java.base,java.desktop,java.logging,java.prefs,java.xml,javafx.controls,javafx.fxml,javafx.graphics `
             --output runtime-minimal
 
+      - name: Prepare jpackage input
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path "jpackage-input" -Force
+          Copy-Item "target/label-printer-1.0-SNAPSHOT.jar" "jpackage-input/"
+
       - name: Build EXE installer with jpackage
         shell: pwsh
         run: |
           jpackage `
-            --input target/ `
+            --input jpackage-input/ `
             --runtime-image runtime-minimal `
             --name "Label Printer" `
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
@@ -92,7 +98,7 @@ jobs:
         shell: pwsh
         run: |
           jpackage `
-            --input target/ `
+            --input jpackage-input/ `
             --runtime-image runtime-minimal `
             --name "Label Printer" `
             --main-jar "label-printer-1.0-SNAPSHOT.jar" `
