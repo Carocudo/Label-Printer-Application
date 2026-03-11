@@ -10,7 +10,7 @@ on:
       version:
         description: 'Version number without v prefix (e.g. 0.8.1)'
         required: true
-        default: '0.8.'
+        default: '0.9.'
 
 permissions:
   contents: write
@@ -153,7 +153,7 @@ jobs:
 
       - name: Create GitHub Release (tag push)
         if: github.event_name == 'push'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Label Printer ${{ github.ref_name }}
           body: |
@@ -176,7 +176,7 @@ jobs:
 
       - name: Create GitHub Release (manual trigger)
         if: github.event_name == 'workflow_dispatch'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: Label Printer v${{ steps.version.outputs.version }}
