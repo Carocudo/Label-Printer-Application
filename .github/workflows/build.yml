@@ -36,6 +36,13 @@ jobs:
           $v = if ("${{ github.event.inputs.version }}" -ne "") { "${{ github.event.inputs.version }}".TrimStart("v") } else { "${{ github.ref_name }}".TrimStart("v") }
           echo "version=$v" >> $env:GITHUB_OUTPUT
 
+      - name: Set version in pom.xml
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          (Get-Content pom.xml) -replace '<version>.*-SNAPSHOT</version>', "<version>$version</version>" | Set-Content pom.xml
+          Write-Host "Updated pom.xml version to $version"
+
       - name: Build fat JAR
         run: mvn clean package
 
