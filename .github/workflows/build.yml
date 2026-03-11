@@ -101,7 +101,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path "jpackage-input" -Force
-          Copy-Item "target/label-printer-1.0-SNAPSHOT.jar" "jpackage-input/"
+          Copy-Item "target/label-printer-*.jar" "jpackage-input/"
 
       - name: Build EXE installer with jpackage
         shell: pwsh
@@ -110,7 +110,7 @@ jobs:
             --input jpackage-input/ `
             --runtime-image runtime-minimal `
             --name "Label Printer" `
-            --main-jar "label-printer-1.0-SNAPSHOT.jar" `
+            --main-jar "label-printer-${{ steps.version.outputs.version }}.jar" `
             --main-class Launcher `
             --type exe `
             --icon src/main/resources/io/github/carocudo/labelprinter/icon.ico `
@@ -130,7 +130,7 @@ jobs:
             --input jpackage-input/ `
             --runtime-image runtime-minimal `
             --name "Label Printer" `
-            --main-jar "label-printer-1.0-SNAPSHOT.jar" `
+            --main-jar "label-printer-${{ steps.version.outputs.version }}.jar" `
             --main-class Launcher `
             --type app-image `
             --icon src/main/resources/io/github/carocudo/labelprinter/icon.ico `
