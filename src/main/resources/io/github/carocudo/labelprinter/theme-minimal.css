@@ -341,3 +341,13 @@
     -fx-border-color: #333333;
     -fx-border-width: 2;
 }
+
+.version-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 7px;
+    -fx-opacity: 0.6;
+}
+
+.version-label:hover {
+    -fx-opacity: 1.0;
+}

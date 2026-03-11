@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 public class MainApp extends Application {
     private static final double UI_GRID_GAP = 8;
+    private Stage primaryStage;
 
     private final DataStore dataStore = new DataStore(Path.of("data"));
     private final ObservableList<Product> productOptions = FXCollections.observableArrayList();
@@ -55,8 +56,10 @@ public class MainApp extends Application {
             showError(bundle.getString("error.title.data"), bundle.getString("error.message.localdata"), ex.getMessage());
         }
 
+        this.primaryStage = primaryStage;
+
         BorderPane root = new BorderPane();
-        root.setPadding(new Insets(12));
+        root.setPadding(new Insets(12, 12, 4, 12));
 
         gridPane = buildLabelGrid();
         ScrollPane scrollPane = new ScrollPane(gridPane);
@@ -189,7 +192,7 @@ public class MainApp extends Application {
 
         Button editDataButton = new Button(bundle.getString("main.button.edit"));
         editDataButton.setOnAction(event -> {
-            EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, payload -> {
+            EditDataDialog dialog = new EditDataDialog(productOptions, versionOptions, warehouseOptions, bundle, payload -> {
                 productOptions.setAll(sortedProducts(payload.products()));
                 versionOptions.setAll(sortedValues(payload.versions()));
                 warehouseOptions.setAll(sortedValues(payload.warehouses()));
@@ -305,8 +308,18 @@ public class MainApp extends Application {
         // Full row
         HBox row2 = new HBox(16, settingsGroup, clearGroup, spacer, printButton);
 
-        VBox container = new VBox(12, new Separator(), row1, row2);
-        container.setPadding(new Insets(12, 0, 0, 0));
+        Label versionLabel = new Label("v" + loadAppVersion());
+        versionLabel.getStyleClass().add("version-label");
+        versionLabel.setOnMouseClicked(e -> showAboutDialog(loadAppVersion()));
+        versionLabel.setCursor(javafx.scene.Cursor.HAND);
+
+        HBox versionRow = new HBox(versionLabel);
+        versionRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox container = new VBox(0, new Separator(), row1, row2, versionRow);
+        container.setPadding(new Insets(12, 0, 2, 0));
+        VBox.setMargin(row1, new Insets(12, 0, 10, 0));
+        VBox.setMargin(row2, new Insets(0, 0, 8, 0));
 
         return container;
     }
@@ -480,6 +493,7 @@ public class MainApp extends Application {
             showAlert(bundle.getString("alert.print.noprinter.title"), bundle.getString("alert.print.noprinter.body"));
             return;
         }
+        job.getJobSettings().setJobName(bundle.getString("print.jobname"));
         boolean proceed = job.showPrintDialog(null);
         if (!proceed) {
             return;
@@ -616,6 +630,10 @@ public class MainApp extends Application {
         dialog.getDialogPane().getStylesheets().add(
                 getClass().getResource(getThemePath(settings.getTheme())).toExternalForm()
         );
+        dialog.setOnShowing(e -> {
+            Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            dialogStage.getIcons().addAll(primaryStage.getIcons());
+        });
     }
 
     private String getThemePath(String theme) {
@@ -633,4 +651,31 @@ public class MainApp extends Application {
 //        bundle = ResourceBundle.getBundle(
 //                "io/github/carocudo/labelprinter/messages", locale);
 //    }
+
+    private String loadAppVersion() {
+        try (var stream = getClass().getResourceAsStream(
+                "/io/github/carocudo/labelprinter/app.properties")) {
+            if (stream == null) return "dev";
+            Properties props = new Properties();
+            props.load(stream);
+            return props.getProperty("app.version", "dev");
+        } catch (IOException e) {
+            return "dev";
+        }
+    }
+
+    private void showAboutDialog(String version) {
+        Alert about = new Alert(Alert.AlertType.NONE);
+        about.setTitle(bundle.getString("about.title"));
+        about.getButtonTypes().add(ButtonType.CLOSE);
+        about.setHeaderText(bundle.getString("app.title"));
+        about.setContentText(
+                bundle.getString("about.version") + " " + version + "\n" +
+                        bundle.getString("about.company") + "\n\n" +
+                        bundle.getString("about.description") + "\n\n"
+        );
+        applyThemeToDialog(about);
+        about.showAndWait();
+    }
+
 }
