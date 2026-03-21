@@ -114,20 +114,13 @@ public class LabelCell extends StackPane {
     private void updateText() {
         if (data == null || data.isEmpty()) {
             productLabel.setText("");
+            productLabel.setStyle("-fx-font-size: " + fontSize + "px; -fx-font-weight: bold;");
             versionLabel.setText("");
             warehouseLabel.setText("");
             dateLabel.setText("");
             return;
         }
-        String productText = "";
-        if (data.getProduct() != null) {
-            productText = data.getProduct().getName().isBlank()
-                    ? data.getProduct().getCode()
-                    : data.getProduct().getName();
-        }
-        String versionText = data.getVersion() == null ? "" : data.getVersion();
-        String productLine = (productText + " " + versionText).trim();
-        productLabel.setText(productLine);
+        productLabel.setText(data.getProductLineText());
         versionLabel.setText(data.getWarehouse() == null ? "" : data.getWarehouse());
         warehouseLabel.setText(data.getDate() == null ? "" : data.getDate().toString());
         dateLabel.setText("");

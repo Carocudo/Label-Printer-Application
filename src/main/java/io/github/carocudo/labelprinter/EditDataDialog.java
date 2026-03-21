@@ -65,7 +65,7 @@ public class EditDataDialog extends Dialog<Void> {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getCode() + " — " + item.getName());
+                    setText(item.getCode() + " \u2014 " + item.getName());
                 }
             }
         });
@@ -82,12 +82,27 @@ public class EditDataDialog extends Dialog<Void> {
         addButton.setOnAction(event -> {
             String code = codeField.getText().trim();
             String name = nameField.getText().trim();
-            if (!code.isBlank() || !name.isBlank()) {
-                products.add(new Product(code, name));
-                codeField.clear();
-                nameField.clear();
+            if (code.isBlank() && name.isBlank()) {
+                codeField.setStyle("-fx-border-color: red;");
+                Tooltip tooltip = new Tooltip(bundle.getString("editdata.validation.atleastone"));
+                tooltip.setAutoHide(true);
+                tooltip.show(codeField.getScene().getWindow());
                 codeField.requestFocus();
+                new java.util.Timer().schedule(new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        javafx.application.Platform.runLater(() -> {
+                            tooltip.hide();
+                            codeField.setStyle("");
+                        });
+                    }
+                }, 2000);
+                return;
             }
+            products.add(new Product(code, name));
+            codeField.clear();
+            nameField.clear();
+            codeField.requestFocus();
         });
 
         Button removeButton = new Button(bundle.getString("editdata.button.remove"));

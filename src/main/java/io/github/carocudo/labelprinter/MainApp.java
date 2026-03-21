@@ -23,6 +23,10 @@ import java.util.stream.Stream;
 
 public class MainApp extends Application {
     private static final double UI_GRID_GAP = 8;
+    private static final String THEME_CORPORATE = PrintSettings.THEME_CORPORATE;
+    private static final String THEME_DARK = PrintSettings.THEME_DARK;
+    private static final String THEME_MINIMAL = PrintSettings.THEME_MINIMAL;
+    private static final String THEME_OCEAN = PrintSettings.THEME_OCEAN;
     private Stage primaryStage;
 
     private final DataStore dataStore = new DataStore(Path.of("data"));
@@ -576,14 +580,7 @@ public class MainApp extends Application {
         double paddingLeft = LabelSheetConfig.mmToPoints(settings.getPaddingLeftMm());
         box.setPadding(new Insets(paddingTop, 0, 0, paddingLeft));
         if (data != null && !data.isEmpty()) {
-            String productText = "";
-            if (data.getProduct() != null) {
-                productText = data.getProduct().getName().isBlank()
-                        ? data.getProduct().getCode()
-                        : data.getProduct().getName();
-            }
-            String versionText = data.getVersion() == null ? "" : data.getVersion();
-            String productLine = (productText + " " + versionText).trim();
+            String productLine = data.getProductLineText();
             Label product = new Label(productLine);
             product.setFont(Font.font(settings.getFontSize()));
             product.setStyle("-fx-font-weight: bold;");
@@ -614,12 +611,7 @@ public class MainApp extends Application {
 
     private void applyTheme(String theme, Scene scene) {
         scene.getStylesheets().clear();
-        String css = switch (theme) {
-            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
-            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
-            default -> "/io/github/carocudo/labelprinter/style.css";
-        };
+        String css = getThemePath(theme);
         var resource = getClass().getResource(css);
         if (resource != null) {
             scene.getStylesheets().add(resource.toExternalForm());
@@ -638,9 +630,9 @@ public class MainApp extends Application {
 
     private String getThemePath(String theme) {
         return switch (theme) {
-            case "Dark" -> "/io/github/carocudo/labelprinter/theme-dark.css";
-            case "Minimal" -> "/io/github/carocudo/labelprinter/theme-minimal.css";
-            case "Ocean" -> "/io/github/carocudo/labelprinter/theme-ocean.css";
+            case THEME_DARK -> "/io/github/carocudo/labelprinter/theme-dark.css";
+            case THEME_MINIMAL -> "/io/github/carocudo/labelprinter/theme-minimal.css";
+            case THEME_OCEAN -> "/io/github/carocudo/labelprinter/theme-ocean.css";
             default -> "/io/github/carocudo/labelprinter/style.css";
         };
     }

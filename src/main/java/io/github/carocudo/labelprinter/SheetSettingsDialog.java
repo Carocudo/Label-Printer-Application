@@ -9,6 +9,28 @@ import java.util.ResourceBundle;
 
 public class SheetSettingsDialog extends Dialog<PrintSettings> {
 
+    private void addValidation(TextField field, boolean positiveOnly) {
+        field.textProperty().addListener((obs, oldVal, newVal) -> {
+            String trimmed = newVal != null ? newVal.trim() : "";
+            if (trimmed.isEmpty()) {
+                field.setStyle("");
+                return;
+            }
+            try {
+                double parsed = Double.parseDouble(trimmed);
+                if (positiveOnly && parsed <= 0) {
+                    field.setStyle("-fx-border-color: red;");
+                } else if (!positiveOnly && parsed < 0) {
+                    field.setStyle("-fx-border-color: red;");
+                } else {
+                    field.setStyle("");
+                }
+            } catch (NumberFormatException e) {
+                field.setStyle("-fx-border-color: red;");
+            }
+        });
+    }
+
     public SheetSettingsDialog(PrintSettings settings, ResourceBundle bundle) {
         setTitle(bundle.getString("sheetsettings.title"));
 
@@ -26,8 +48,19 @@ public class SheetSettingsDialog extends Dialog<PrintSettings> {
         TextField paddingTopField = new TextField(Double.toString(settings.getPaddingTopMm()));
         TextField paddingLeftField = new TextField(Double.toString(settings.getPaddingLeftMm()));
 
+        addValidation(pageWidthField, true);
+        addValidation(pageHeightField, true);
+        addValidation(labelWidthField, true);
+        addValidation(labelHeightField, true);
+        addValidation(gapXField, false);
+        addValidation(gapYField, false);
+        addValidation(marginTopField, false);
+        addValidation(marginLeftField, false);
+        addValidation(paddingTopField, false);
+        addValidation(paddingLeftField, false);
+
         ComboBox<String> themeCombo = new ComboBox<>();
-        themeCombo.getItems().addAll("Corporate", "Dark", "Minimal", "Ocean");
+        themeCombo.getItems().addAll(PrintSettings.THEMES);
         themeCombo.setValue(settings.getTheme());
         themeCombo.setMaxWidth(Double.MAX_VALUE);
 

@@ -46,4 +46,17 @@ public class LabelData {
                 && (warehouse == null || warehouse.isBlank())
                 && date == null;
     }
+
+    public String getProductDisplayText() {
+        if (product == null) {
+            return "";
+        }
+        return product.getName().isBlank() ? product.getCode() : product.getName();
+    }
+
+    public String getProductLineText() {
+        String productText = getProductDisplayText();
+        String versionText = version == null ? "" : version;
+        return (productText + " " + versionText).trim();
+    }
 }

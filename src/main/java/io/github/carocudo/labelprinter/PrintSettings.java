@@ -1,6 +1,12 @@
 package io.github.carocudo.labelprinter;
 
 public class PrintSettings {
+    public static final String THEME_CORPORATE = "Corporate";
+    public static final String THEME_DARK = "Dark";
+    public static final String THEME_MINIMAL = "Minimal";
+    public static final String THEME_OCEAN = "Ocean";
+    public static final String[] THEMES = {THEME_CORPORATE, THEME_DARK, THEME_MINIMAL, THEME_OCEAN};
+
     private double pageWidthMm = LabelSheetConfig.DEFAULT_PAGE_WIDTH_MM;
     private double pageHeightMm = LabelSheetConfig.DEFAULT_PAGE_HEIGHT_MM;
     private double labelWidthMm = LabelSheetConfig.DEFAULT_LABEL_WIDTH_MM;
@@ -13,7 +19,7 @@ public class PrintSettings {
     private double marginLeftMm = LabelSheetConfig.DEFAULT_MARGIN_LEFT_MM;
     private double fontSize = 12;
 
-    private String theme = "Corporate";
+    private String theme = THEME_CORPORATE;
 
     private String language = "en";  // default
     // + getter/setter
